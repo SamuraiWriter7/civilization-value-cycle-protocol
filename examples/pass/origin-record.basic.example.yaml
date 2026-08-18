@@ -1,0 +1,38 @@
+protocol_version: "0.1"
+record_type: origin_record
+
+origin_id: OID:book/shidenkai-ai/civilization-os/v1
+
+creator:
+  creator_id: creator:shidenkai-ai
+  display_name: Shidenkai AI
+  type: person
+
+asset:
+  asset_id: civilization-os
+  asset_type: text
+  title: Civilization OS
+  version: v1
+
+content_hash:
+  algorithm: sha256
+  value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+rights:
+  rights_holders:
+    - creator:shidenkai-ai
+  license: CC-BY-4.0
+  license_uri: https://creativecommons.org/licenses/by/4.0/
+
+access_policy:
+  reference: allow
+  training: conditional
+  commercial_use: conditional
+  attribution_required: true
+  royalty_required: true
+  royalty_rate: 0.10
+
+provenance_refs:
+  - provenance:initial-publication
+
+created_at: "2026-08-18T00:00:00Z"
