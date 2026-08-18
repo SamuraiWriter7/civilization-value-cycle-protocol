@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:audit_record:v0.1",
+  "title": "CVCP Audit Record v0.1",
+  "description": "Evaluates Trace evidence and records auditable contribution assessments for a Derivative.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "audit_id",
+    "derivative_id",
+    "trace_refs",
+    "auditor_id",
+    "status",
+    "contributions",
+    "evidence_refs",
+    "reasoning_summary",
+    "audited_at"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.1"
+    },
+    "record_type": {
+      "const": "audit_record"
+    },
+    "audit_id": {
+      "$ref": "#/$defs/auditId"
+    },
+    "derivative_id": {
+      "$ref": "#/$defs/derivativeId"
+    },
+    "trace_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/traceId"
+      }
+    },
+    "auditor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "disputed",
+        "rejected"
+      ]
+    },
+    "contributions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/contribution"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reasoning_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "audited_at": {
+      "$ref": "#/$defs/dateTime"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "verified"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "contributions": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "auditId": {
+      "type": "string",
+      "pattern": "^AID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "derivativeId": {
+      "type": "string",
+      "pattern": "^DID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "traceId": {
+      "type": "string",
+      "pattern": "^TID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "originId": {
+      "type": "string",
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin_id",
+        "weight",
+        "evidence_trace_ids"
+      ],
+      "properties": {
+        "origin_id": {
+          "$ref": "#/$defs/originId"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidence_trace_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/traceId"
+          }
+        }
+      }
+    }
+  }
+}
