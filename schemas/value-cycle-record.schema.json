@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:value_cycle_record:v0.1",
+  "title": "CVCP Value Cycle Record v0.1",
+  "description": "Top-level lifecycle record linking Origin, Derivative, Trace, Audit, and Royalty references across one value cycle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "cycle_id",
+    "origin_refs",
+    "cycle_status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.1"
+    },
+    "record_type": {
+      "const": "value_cycle_record"
+    },
+    "cycle_id": {
+      "$ref": "#/$defs/cycleId"
+    },
+    "origin_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/originId"
+      }
+    },
+    "derivative_ref": {
+      "$ref": "#/$defs/derivativeId"
+    },
+    "trace_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/traceId"
+      }
+    },
+    "audit_ref": {
+      "$ref": "#/$defs/auditId"
+    },
+    "royalty_ref": {
+      "$ref": "#/$defs/royaltyId"
+    },
+    "cycle_status": {
+      "type": "string",
+      "enum": [
+        "origin_registered",
+        "derivative_created",
+        "trace_recorded",
+        "audit_pending",
+        "audit_verified",
+        "royalty_calculated",
+        "settlement_pending",
+        "settled",
+        "disputed"
+      ]
+    },
+    "created_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "updated_at": {
+      "$ref": "#/$defs/dateTime"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "cycle_status": {
+            "enum": [
+              "derivative_created",
+              "trace_recorded",
+              "audit_pending",
+              "audit_verified",
+              "royalty_calculated",
+              "settlement_pending",
+              "settled",
+              "disputed"
+            ]
+          }
+        },
+        "required": [
+          "cycle_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "derivative_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cycle_status": {
+            "enum": [
+              "trace_recorded",
+              "audit_pending",
+              "audit_verified",
+              "royalty_calculated",
+              "settlement_pending",
+              "settled",
+              "disputed"
+            ]
+          }
+        },
+        "required": [
+          "cycle_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "trace_refs"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cycle_status": {
+            "enum": [
+              "audit_verified",
+              "royalty_calculated",
+              "settlement_pending",
+              "settled",
+              "disputed"
+            ]
+          }
+        },
+        "required": [
+          "cycle_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "audit_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cycle_status": {
+            "enum": [
+              "royalty_calculated",
+              "settlement_pending",
+              "settled"
+            ]
+          }
+        },
+        "required": [
+          "cycle_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "royalty_ref"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "cycleId": {
+      "type": "string",
+      "pattern": "^VCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "originId": {
+      "type": "string",
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "derivativeId": {
+      "type": "string",
+      "pattern": "^DID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "traceId": {
+      "type": "string",
+      "pattern": "^TID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "auditId": {
+      "type": "string",
+      "pattern": "^AID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "royaltyId": {
+      "type": "string",
+      "pattern": "^RID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
