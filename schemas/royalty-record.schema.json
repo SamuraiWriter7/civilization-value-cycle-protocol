@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:royalty_record:v0.1",
+  "title": "CVCP Royalty Record v0.1",
+  "description": "Records value allocation derived from a verified Audit without granting settlement authority to the generating AI agent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "royalty_id",
+    "audit_id",
+    "value_generated",
+    "value_unit",
+    "allocations",
+    "settlement_status",
+    "created_at"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.1"
+    },
+    "record_type": {
+      "const": "royalty_record"
+    },
+    "royalty_id": {
+      "$ref": "#/$defs/royaltyId"
+    },
+    "audit_id": {
+      "$ref": "#/$defs/auditId"
+    },
+    "value_generated": {
+      "type": "number",
+      "minimum": 0
+    },
+    "value_unit": {
+      "$ref": "#/$defs/valueUnit"
+    },
+    "allocations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/allocation"
+      }
+    },
+    "settlement_status": {
+      "type": "string",
+      "enum": [
+        "not_required",
+        "pending",
+        "processing",
+        "settled",
+        "failed",
+        "disputed"
+      ]
+    },
+    "settlement_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "$ref": "#/$defs/dateTime"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "settlement_status": {
+            "const": "settled"
+          }
+        },
+        "required": [
+          "settlement_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "settlement_ref"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "royaltyId": {
+      "type": "string",
+      "pattern": "^RID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "auditId": {
+      "type": "string",
+      "pattern": "^AID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "originId": {
+      "type": "string",
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valueUnit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "code"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "fiat",
+            "token",
+            "credit",
+            "point",
+            "other"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "fiat"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "code": {
+                "pattern": "^[A-Z]{3}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "allocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin_id",
+        "contribution_weight",
+        "royalty_rate",
+        "amount"
+      ],
+      "properties": {
+        "origin_id": {
+          "$ref": "#/$defs/originId"
+        },
+        "contribution_weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "royalty_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
