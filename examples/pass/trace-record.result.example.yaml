@@ -1,0 +1,22 @@
+protocol_version: "0.1"
+record_type: trace_record
+
+trace_id: TID:agent-alpha/20260818T001200Z/t002
+derivative_id: DID:agent-alpha/task-001/20260818T001000Z/n001
+
+sequence: 1
+event_type: result
+
+input_refs:
+  - stage:source-context
+
+output_refs:
+  - DID:agent-alpha/task-001/20260818T001000Z/n001
+
+timestamp: "2026-08-18T00:12:00Z"
+
+evidence:
+  - evidence_type: hash
+    value: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+
+summary: The final derivative output was produced.
