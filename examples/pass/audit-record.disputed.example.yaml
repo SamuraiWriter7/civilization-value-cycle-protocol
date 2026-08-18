@@ -1,0 +1,21 @@
+protocol_version: "0.1"
+record_type: audit_record
+
+audit_id: AID:auditor-main/20260818T001400Z/a002
+derivative_id: DID:agent-alpha/task-001/20260818T001000Z/n001
+
+trace_refs:
+  - TID:agent-alpha/20260818T001100Z/t001
+  - TID:agent-alpha/20260818T001200Z/t002
+
+auditor_id: auditor-main
+status: disputed
+
+contributions: []
+
+evidence_refs:
+  - TID:agent-alpha/20260818T001100Z/t001
+
+reasoning_summary: Contribution remains under dispute and is not eligible for finalized royalty allocation.
+
+audited_at: "2026-08-18T00:14:00Z"
