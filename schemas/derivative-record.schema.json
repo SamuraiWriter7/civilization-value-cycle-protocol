@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:derivative_record:v0.1",
+  "title": "CVCP Derivative Record v0.1",
+  "description": "Registers an AI-generated or AI-mediated derivative output or action and the Origins it declares as dependencies.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "derivative_id",
+    "agent_id",
+    "task_id",
+    "origin_refs",
+    "derivative_type",
+    "output_hash",
+    "created_at"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.1"
+    },
+    "record_type": {
+      "const": "derivative_record"
+    },
+    "derivative_id": {
+      "$ref": "#/$defs/derivativeId"
+    },
+    "agent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/originId"
+      }
+    },
+    "derivative_type": {
+      "type": "string",
+      "enum": [
+        "content",
+        "analysis",
+        "decision",
+        "plan",
+        "action",
+        "composite",
+        "other"
+      ]
+    },
+    "output_hash": {
+      "$ref": "#/$defs/contentHash"
+    },
+    "policy_compliance": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/policyCheck"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "$ref": "#/$defs/dateTime"
+    }
+  },
+  "$defs": {
+    "originId": {
+      "type": "string",
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "derivativeId": {
+      "type": "string",
+      "pattern": "^DID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contentHash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "sha256",
+            "sha384",
+            "sha512",
+            "blake3"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]+$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "enum": [
+                  "sha256",
+                  "blake3"
+                ]
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "sha384"
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{96}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "sha512"
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{128}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "policyCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin_id",
+        "status"
+      ],
+      "properties": {
+        "origin_id": {
+          "$ref": "#/$defs/originId"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "satisfied",
+            "conditional",
+            "unknown"
+          ]
+        },
+        "evidence_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
