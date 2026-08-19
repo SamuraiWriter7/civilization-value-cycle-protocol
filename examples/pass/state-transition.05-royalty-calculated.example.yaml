@@ -1,0 +1,19 @@
+protocol_version: "0.2"
+record_type: state_transition_record
+
+transition_id: STID:cycle-main/20260819T010710Z/st005
+cycle_id: VCID:cycle-main/20260819T010000Z/c001
+
+previous_status: audit_verified
+next_status: royalty_calculated
+
+evidence_refs:
+  - RID:royalty-engine/20260819T010700Z/r001
+
+transitioned_at: "2026-08-19T01:07:10Z"
+actor_id: cycle-controller
+reason: Royalty allocation was calculated from the verified Audit.
+
+transition_hash:
+  algorithm: sha256
+  value: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
