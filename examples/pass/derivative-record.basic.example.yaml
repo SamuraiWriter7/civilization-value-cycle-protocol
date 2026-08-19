@@ -1,7 +1,7 @@
-protocol_version: "0.1"
+protocol_version: "0.2"
 record_type: derivative_record
 
-derivative_id: DID:agent-alpha/task-001/20260818T001000Z/n001
+derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
 agent_id: agent-alpha
 task_id: task-001
 
@@ -22,4 +22,4 @@ policy_compliance:
 metadata:
   model_family: example-model
 
-created_at: "2026-08-18T00:10:00Z"
+created_at: "2026-08-19T01:00:00Z"
