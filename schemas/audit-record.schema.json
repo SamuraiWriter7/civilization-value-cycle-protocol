@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:audit_record:v0.1",
-  "title": "CVCP Audit Record v0.1",
-  "description": "Evaluates Trace evidence and records auditable contribution assessments for a Derivative.",
+  "$id": "urn:cvcp:schema:audit_record:v0.2",
+  "title": "CVCP Audit Record v0.2",
+  "description": "Evaluates Trace Chain evidence and records auditable contribution assessments for a Derivative.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -10,6 +10,7 @@
     "record_type",
     "audit_id",
     "derivative_id",
+    "trace_chain_ref",
     "trace_refs",
     "auditor_id",
     "status",
@@ -20,7 +21,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.1"
+      "const": "0.2"
     },
     "record_type": {
       "const": "audit_record"
@@ -30,6 +31,9 @@
     },
     "derivative_id": {
       "$ref": "#/$defs/derivativeId"
+    },
+    "trace_chain_ref": {
+      "$ref": "#/$defs/traceChainId"
     },
     "trace_refs": {
       "type": "array",
@@ -103,6 +107,10 @@
     "derivativeId": {
       "type": "string",
       "pattern": "^DID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "traceChainId": {
+      "type": "string",
+      "pattern": "^TCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
     "traceId": {
       "type": "string",
