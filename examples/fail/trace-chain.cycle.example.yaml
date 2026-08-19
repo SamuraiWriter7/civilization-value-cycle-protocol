@@ -1,0 +1,92 @@
+fixture_type: semantic_scenario
+name: trace-chain-cycle
+
+records:
+  - protocol_version: "0.2"
+    record_type: trace_record
+
+    trace_id: TID:agent-alpha/20260819T011200Z/t910
+    derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+
+    sequence: 4
+    event_type: decision
+
+    previous_trace_id: TID:agent-alpha/20260819T010400Z/t004
+
+    causal_parent_refs:
+      - TID:agent-alpha/20260819T011300Z/t911
+
+    input_refs:
+      - stage:result
+
+    output_refs:
+      - stage:decision
+
+    timestamp: "2026-08-19T01:12:00Z"
+
+    evidence:
+      - evidence_type: statement
+        value: cycle-node-1
+
+    event_hash:
+      algorithm: sha256
+      value: 8888888888888888888888888888888888888888888888888888888888888888
+
+    summary: First node of the intentional cycle.
+
+  - protocol_version: "0.2"
+    record_type: trace_record
+
+    trace_id: TID:agent-alpha/20260819T011300Z/t911
+    derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+
+    sequence: 5
+    event_type: action
+
+    previous_trace_id: TID:agent-alpha/20260819T011200Z/t910
+    causal_parent_refs: []
+
+    input_refs:
+      - stage:decision
+
+    output_refs:
+      - stage:action
+
+    timestamp: "2026-08-19T01:13:00Z"
+
+    evidence:
+      - evidence_type: statement
+        value: cycle-node-2
+
+    event_hash:
+      algorithm: sha256
+      value: 7777777777777777777777777777777777777777777777777777777777777777
+
+    summary: Second node of the intentional cycle.
+
+  - protocol_version: "0.2"
+    record_type: trace_chain_record
+
+    trace_chain_id: TCID:agent-alpha/20260819T011400Z/tc902
+    derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+
+    trace_refs:
+      - TID:agent-alpha/20260819T010100Z/t001
+      - TID:agent-alpha/20260819T010200Z/t002
+      - TID:agent-alpha/20260819T010300Z/t003
+      - TID:agent-alpha/20260819T010400Z/t004
+      - TID:agent-alpha/20260819T011200Z/t910
+      - TID:agent-alpha/20260819T011300Z/t911
+
+    root_trace_id: TID:agent-alpha/20260819T010100Z/t001
+
+    terminal_trace_ids:
+      - TID:agent-alpha/20260819T011300Z/t911
+
+    event_count: 6
+
+    chain_hash:
+      algorithm: sha256
+      value: 6666666666666666666666666666666666666666666666666666666666666666
+
+    created_at: "2026-08-19T01:14:00Z"
