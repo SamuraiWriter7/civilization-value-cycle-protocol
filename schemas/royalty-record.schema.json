@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:royalty_record:v0.1",
-  "title": "CVCP Royalty Record v0.1",
+  "$id": "urn:cvcp:schema:royalty_record:v0.2",
+  "title": "CVCP Royalty Record v0.2",
   "description": "Records value allocation derived from a verified Audit without granting settlement authority to the generating AI agent.",
   "type": "object",
   "additionalProperties": false,
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.1"
+      "const": "0.2"
     },
     "record_type": {
       "const": "royalty_record"
