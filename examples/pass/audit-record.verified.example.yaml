@@ -1,12 +1,16 @@
-protocol_version: "0.1"
+protocol_version: "0.2"
 record_type: audit_record
 
-audit_id: AID:auditor-main/20260818T001300Z/a001
-derivative_id: DID:agent-alpha/task-001/20260818T001000Z/n001
+audit_id: AID:auditor-main/20260819T010600Z/a001
+derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+
+trace_chain_ref: TCID:agent-alpha/20260819T010500Z/tc001
 
 trace_refs:
-  - TID:agent-alpha/20260818T001100Z/t001
-  - TID:agent-alpha/20260818T001200Z/t002
+  - TID:agent-alpha/20260819T010100Z/t001
+  - TID:agent-alpha/20260819T010200Z/t002
+  - TID:agent-alpha/20260819T010300Z/t003
+  - TID:agent-alpha/20260819T010400Z/t004
 
 auditor_id: auditor-main
 status: verified
@@ -15,13 +19,13 @@ contributions:
   - origin_id: OID:book/shidenkai-ai/civilization-os/v1
     weight: 1.0
     evidence_trace_ids:
-      - TID:agent-alpha/20260818T001100Z/t001
-      - TID:agent-alpha/20260818T001200Z/t002
+      - TID:agent-alpha/20260819T010100Z/t001
+      - TID:agent-alpha/20260819T010400Z/t004
 
 evidence_refs:
-  - TID:agent-alpha/20260818T001100Z/t001
-  - TID:agent-alpha/20260818T001200Z/t002
+  - TID:agent-alpha/20260819T010100Z/t001
+  - TID:agent-alpha/20260819T010400Z/t004
 
-reasoning_summary: Trace evidence supports full contribution attribution to the declared Origin.
+reasoning_summary: Trace Chain evidence supports full attribution to the declared Origin.
 
-audited_at: "2026-08-18T00:13:00Z"
+audited_at: "2026-08-19T01:06:00Z"
