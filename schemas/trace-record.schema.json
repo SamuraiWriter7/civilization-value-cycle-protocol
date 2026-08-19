@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:trace_record:v0.1",
-  "title": "CVCP Trace Record v0.1",
-  "description": "Records neutral causal events connecting references, transformations, decisions, actions, and results to a Derivative.",
+  "$id": "urn:cvcp:schema:trace_record:v0.2",
+  "title": "CVCP Trace Record v0.2",
+  "description": "Records a neutral causal event for a Derivative, including explicit parent links and an integrity hash.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -15,11 +15,12 @@
     "input_refs",
     "output_refs",
     "timestamp",
-    "evidence"
+    "evidence",
+    "event_hash"
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.1"
+      "const": "0.2"
     },
     "record_type": {
       "const": "trace_record"
@@ -44,6 +45,17 @@
         "action",
         "result"
       ]
+    },
+    "previous_trace_id": {
+      "$ref": "#/$defs/traceId"
+    },
+    "causal_parent_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/traceId"
+      },
+      "default": []
     },
     "input_refs": {
       "type": "array",
@@ -71,11 +83,57 @@
         "$ref": "#/$defs/evidence"
       }
     },
+    "event_hash": {
+      "$ref": "#/$defs/contentHash"
+    },
     "summary": {
       "type": "string",
       "minLength": 1
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "const": 0
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "previous_trace_id"
+          ]
+        },
+        "properties": {
+          "causal_parent_refs": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequence": {
+            "minimum": 1
+          }
+        },
+        "required": [
+          "sequence"
+        ]
+      },
+      "then": {
+        "required": [
+          "previous_trace_id"
+        ]
+      }
+    }
+  ],
   "$defs": {
     "traceId": {
       "type": "string",
