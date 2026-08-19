@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:state_transition_record:v0.2",
+  "title": "CVCP State Transition Record v0.2",
+  "description": "Records one auditable transition between Value Cycle states.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "transition_id",
+    "cycle_id",
+    "previous_status",
+    "next_status",
+    "evidence_refs",
+    "transitioned_at",
+    "actor_id",
+    "reason",
+    "transition_hash"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.2"
+    },
+    "record_type": {
+      "const": "state_transition_record"
+    },
+    "transition_id": {
+      "$ref": "#/$defs/transitionId"
+    },
+    "cycle_id": {
+      "$ref": "#/$defs/cycleId"
+    },
+    "previous_status": {
+      "$ref": "#/$defs/cycleStatus"
+    },
+    "next_status": {
+      "$ref": "#/$defs/cycleStatus"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "transitioned_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "actor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transition_hash": {
+      "$ref": "#/$defs/contentHash"
+    }
+  },
+  "$defs": {
+    "transitionId": {
+      "type": "string",
+      "pattern": "^STID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "cycleId": {
+      "type": "string",
+      "pattern": "^VCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "cycleStatus": {
+      "type": "string",
+      "enum": [
+        "origin_registered",
+        "derivative_created",
+        "trace_recorded",
+        "audit_pending",
+        "audit_verified",
+        "royalty_calculated",
+        "settlement_pending",
+        "settled",
+        "disputed"
+      ]
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contentHash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "sha256",
+            "sha384",
+            "sha512",
+            "blake3"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]+$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "enum": [
+                  "sha256",
+                  "blake3"
+                ]
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "sha384"
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{96}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "sha512"
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{128}$"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
