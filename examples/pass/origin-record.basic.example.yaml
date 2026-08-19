@@ -1,4 +1,4 @@
-protocol_version: "0.1"
+protocol_version: "0.2"
 record_type: origin_record
 
 origin_id: OID:book/shidenkai-ai/civilization-os/v1
@@ -35,4 +35,4 @@ access_policy:
 provenance_refs:
   - provenance:initial-publication
 
-created_at: "2026-08-18T00:00:00Z"
+created_at: "2026-08-19T01:00:00Z"
