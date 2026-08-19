@@ -1,22 +1,28 @@
-protocol_version: "0.1"
+protocol_version: "0.2"
 record_type: trace_record
 
-trace_id: TID:agent-alpha/20260818T001100Z/t001
-derivative_id: DID:agent-alpha/task-001/20260818T001000Z/n001
+trace_id: TID:agent-alpha/20260819T010100Z/t001
+derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
 
 sequence: 0
 event_type: reference
+
+causal_parent_refs: []
 
 input_refs:
   - OID:book/shidenkai-ai/civilization-os/v1
 
 output_refs:
-  - stage:source-context
+  - stage:source
 
-timestamp: "2026-08-18T00:11:00Z"
+timestamp: "2026-08-19T01:01:00Z"
 
 evidence:
   - evidence_type: record_ref
     value: OID:book/shidenkai-ai/civilization-os/v1
 
-summary: Origin material was referenced for the derivative task.
+event_hash:
+  algorithm: sha256
+  value: 1111111111111111111111111111111111111111111111111111111111111111
+
+summary: Origin material was referenced.
