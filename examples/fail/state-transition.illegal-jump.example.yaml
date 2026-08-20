@@ -11,9 +11,11 @@ evidence_refs:
   - RID:royalty-engine/20260819T010700Z/r001
 
 transitioned_at: "2026-08-19T01:18:00Z"
+
 actor_id: cycle-controller
-reason: Intentional illegal state jump.
+
+reason: Intentional illegal state jump from origin registration directly to settlement.
 
 transition_hash:
   algorithm: sha256
-  value: 2222222222222222222222222222222222222222222222222222222222222222
+  value: "2222222222222222222222222222222222222222222222222222222222222222"
