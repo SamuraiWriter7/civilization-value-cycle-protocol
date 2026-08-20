@@ -30,9 +30,9 @@ records:
 
     event_hash:
       algorithm: sha256
-      value: 8888888888888888888888888888888888888888888888888888888888888888
+      value: "8888888888888888888888888888888888888888888888888888888888888888"
 
-    summary: First node of the intentional cycle.
+    summary: First node of the intentional causal cycle.
 
   - protocol_version: "0.2"
     record_type: trace_record
@@ -60,9 +60,9 @@ records:
 
     event_hash:
       algorithm: sha256
-      value: 7777777777777777777777777777777777777777777777777777777777777777
+      value: "7777777777777777777777777777777777777777777777777777777777777777"
 
-    summary: Second node of the intentional cycle.
+    summary: Second node of the intentional causal cycle.
 
   - protocol_version: "0.2"
     record_type: trace_chain_record
@@ -87,6 +87,6 @@ records:
 
     chain_hash:
       algorithm: sha256
-      value: 6666666666666666666666666666666666666666666666666666666666666666
+      value: "6666666666666666666666666666666666666666666666666666666666666666"
 
     created_at: "2026-08-19T01:14:00Z"
