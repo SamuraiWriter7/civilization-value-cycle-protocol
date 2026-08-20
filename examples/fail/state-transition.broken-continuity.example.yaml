@@ -20,7 +20,7 @@ records:
 
     transition_hash:
       algorithm: sha256
-      value: 1111111111111111111111111111111111111111111111111111111111111111
+      value: "1111111111111111111111111111111111111111111111111111111111111111"
 
   - protocol_version: "0.2"
     record_type: state_transition_record
@@ -40,7 +40,7 @@ records:
 
     transition_hash:
       algorithm: sha256
-      value: 2222222222222222222222222222222222222222222222222222222222222222
+      value: "2222222222222222222222222222222222222222222222222222222222222222"
 
   - protocol_version: "0.2"
     record_type: value_cycle_record
@@ -51,6 +51,7 @@ records:
       - OID:book/shidenkai-ai/civilization-os/v1
 
     derivative_ref: DID:agent-alpha/task-001/20260819T010000Z/n001
+
     trace_chain_ref: TCID:agent-alpha/20260819T010500Z/tc001
 
     trace_refs:
