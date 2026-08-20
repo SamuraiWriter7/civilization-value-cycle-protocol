@@ -24,6 +24,6 @@ evidence:
 
 event_hash:
   algorithm: sha256
-  value: 9999999999999999999999999999999999999999999999999999999999999999
+  value: "9999999999999999999999999999999999999999999999999999999999999999"
 
-summary: This Trace intentionally references a nonexistent parent.
+summary: This Trace intentionally references a nonexistent parent Trace.
