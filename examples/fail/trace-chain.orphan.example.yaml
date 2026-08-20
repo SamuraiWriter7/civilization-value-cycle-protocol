@@ -27,9 +27,9 @@ records:
 
     event_hash:
       algorithm: sha256
-      value: 5555555555555555555555555555555555555555555555555555555555555555
+      value: "5555555555555555555555555555555555555555555555555555555555555555"
 
-    summary: Auxiliary Trace outside the tested Trace Chain.
+    summary: Auxiliary root Trace intentionally excluded from the tested Trace Chain.
 
   - protocol_version: "0.2"
     record_type: trace_record
@@ -57,9 +57,9 @@ records:
 
     event_hash:
       algorithm: sha256
-      value: 4444444444444444444444444444444444444444444444444444444444444444
+      value: "4444444444444444444444444444444444444444444444444444444444444444"
 
-    summary: This Trace becomes unreachable inside the tested Trace Chain.
+    summary: This Trace is intentionally unreachable from the declared Trace Chain root.
 
   - protocol_version: "0.2"
     record_type: trace_chain_record
@@ -84,6 +84,6 @@ records:
 
     chain_hash:
       algorithm: sha256
-      value: 3333333333333333333333333333333333333333333333333333333333333333
+      value: "3333333333333333333333333333333333333333333333333333333333333333"
 
     created_at: "2026-08-19T01:17:00Z"
