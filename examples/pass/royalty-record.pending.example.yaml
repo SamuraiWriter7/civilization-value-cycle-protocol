@@ -1,8 +1,8 @@
 protocol_version: "0.2"
 record_type: royalty_record
 
-royalty_id: RID:royalty-engine/20260818T001500Z/r001
-audit_id: AID:auditor-main/20260818T001300Z/a001
+royalty_id: RID:royalty-engine/20260819T010700Z/r001
+audit_id: AID:auditor-main/20260819T010600Z/a001
 
 value_generated: 100.0
 
@@ -18,4 +18,4 @@ allocations:
 
 settlement_status: pending
 
-created_at: "2026-08-18T00:15:00Z"
+created_at: "2026-08-19T01:07:00Z"
