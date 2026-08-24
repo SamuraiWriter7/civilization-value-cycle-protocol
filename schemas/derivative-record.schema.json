@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:derivative_record:v0.2",
-  "title": "CVCP Derivative Record v0.2",
+  "$id": "urn:cvcp:schema:derivative_record:v0.3",
+  "title": "CVCP Derivative Record v0.3",
   "description": "Registers an AI-generated or AI-mediated derivative output or action and its declared Origin dependencies.",
   "type": "object",
   "additionalProperties": false,
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "record_type": {
       "const": "derivative_record"
