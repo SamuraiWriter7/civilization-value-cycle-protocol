@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:royalty_record:v0.2",
-  "title": "CVCP Royalty Record v0.2",
-  "description": "Records value allocation derived from a verified Audit without granting settlement authority to the generating AI agent.",
+  "$id": "urn:cvcp:schema:royalty_record:v0.3",
+  "title": "CVCP Royalty Record v0.3",
+  "description": "Records value allocation and its Contribution Assessment and Audit basis without granting settlement authority to the generating AI agent.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -10,6 +10,7 @@
     "record_type",
     "royalty_id",
     "audit_id",
+    "royalty_basis",
     "value_generated",
     "value_unit",
     "allocations",
@@ -18,7 +19,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "record_type": {
       "const": "royalty_record"
@@ -28,6 +29,9 @@
     },
     "audit_id": {
       "$ref": "#/$defs/auditId"
+    },
+    "royalty_basis": {
+      "$ref": "#/$defs/royaltyBasis"
     },
     "value_generated": {
       "type": "number",
@@ -47,6 +51,7 @@
       "type": "string",
       "enum": [
         "not_required",
+        "provisional",
         "pending",
         "processing",
         "settled",
@@ -79,24 +84,95 @@
           "settlement_ref"
         ]
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "royalty_basis": {
+            "properties": {
+              "audit_status": {
+                "const": "provisional"
+              }
+            },
+            "required": [
+              "audit_status"
+            ]
+          }
+        },
+        "required": [
+          "royalty_basis"
+        ]
+      },
+      "then": {
+        "properties": {
+          "settlement_status": {
+            "enum": [
+              "provisional",
+              "not_required",
+              "disputed"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "royalty_basis": {
+            "properties": {
+              "audit_status": {
+                "enum": [
+                  "disputed",
+                  "rejected"
+                ]
+              }
+            },
+            "required": [
+              "audit_status"
+            ]
+          }
+        },
+        "required": [
+          "royalty_basis"
+        ]
+      },
+      "then": {
+        "properties": {
+          "settlement_status": {
+            "enum": [
+              "not_required",
+              "disputed"
+            ]
+          }
+        }
+      }
     }
   ],
   "$defs": {
-    "royaltyId": {
+    "originId": {
       "type": "string",
-      "pattern": "^RID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "contributionAssessmentId": {
+      "type": "string",
+      "pattern": "^CAID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
     "auditId": {
       "type": "string",
       "pattern": "^AID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
-    "originId": {
+    "royaltyId": {
       "type": "string",
-      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+      "pattern": "^RID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
     "dateTime": {
       "type": "string",
       "format": "date-time"
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
     },
     "valueUnit": {
       "type": "object",
@@ -158,18 +234,40 @@
           "$ref": "#/$defs/originId"
         },
         "contribution_weight": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
+          "$ref": "#/$defs/score"
         },
         "royalty_rate": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
+          "$ref": "#/$defs/score"
         },
         "amount": {
           "type": "number",
           "minimum": 0
+        }
+      }
+    },
+    "royaltyBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contribution_assessment_ref",
+        "audit_confidence",
+        "audit_status"
+      ],
+      "properties": {
+        "contribution_assessment_ref": {
+          "$ref": "#/$defs/contributionAssessmentId"
+        },
+        "audit_confidence": {
+          "$ref": "#/$defs/score"
+        },
+        "audit_status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "provisional",
+            "disputed",
+            "rejected"
+          ]
         }
       }
     }
