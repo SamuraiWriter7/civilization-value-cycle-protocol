@@ -1,0 +1,27 @@
+protocol_version: "0.3"
+record_type: royalty_record
+
+royalty_id: RID:royalty-engine/20260824T020800Z/r901
+audit_id: AID:auditor-main/20260824T010810Z/a002
+
+royalty_basis:
+  contribution_assessment_ref: CAID:assessor-main/20260824T010700Z/ca001
+  audit_confidence: 0.665
+  audit_status: provisional
+
+value_generated: 100.0
+
+value_unit:
+  type: fiat
+  code: USD
+
+allocations:
+  - origin_id: OID:book/shidenkai-ai/civilization-os/v1
+    contribution_weight: 1.0
+    royalty_rate: 0.10
+    amount: 10.0
+
+settlement_status: settled
+settlement_ref: settlement:intentionally-invalid
+
+created_at: "2026-08-24T02:08:00Z"
