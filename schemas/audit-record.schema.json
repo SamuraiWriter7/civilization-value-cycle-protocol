@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:audit_record:v0.2",
-  "title": "CVCP Audit Record v0.2",
-  "description": "Evaluates Trace Chain evidence and records auditable contribution assessments for a Derivative.",
+  "$id": "urn:cvcp:schema:audit_record:v0.3",
+  "title": "CVCP Audit Record v0.3",
+  "description": "Audits Trace, Evidence Assessment, and Contribution Assessment records and expresses confidence in the resulting attribution.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -12,8 +12,13 @@
     "derivative_id",
     "trace_chain_ref",
     "trace_refs",
+    "evidence_assessment_refs",
+    "contribution_assessment_ref",
     "auditor_id",
     "status",
+    "audit_profile",
+    "confidence",
+    "confidence_components",
     "contributions",
     "evidence_refs",
     "reasoning_summary",
@@ -21,7 +26,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "record_type": {
       "const": "audit_record"
@@ -43,6 +48,17 @@
         "$ref": "#/$defs/traceId"
       }
     },
+    "evidence_assessment_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/evidenceAssessmentId"
+      }
+    },
+    "contribution_assessment_ref": {
+      "$ref": "#/$defs/contributionAssessmentId"
+    },
     "auditor_id": {
       "type": "string",
       "minLength": 1
@@ -51,14 +67,24 @@
       "type": "string",
       "enum": [
         "verified",
+        "provisional",
         "disputed",
         "rejected"
       ]
     },
+    "audit_profile": {
+      "$ref": "#/$defs/auditProfile"
+    },
+    "confidence": {
+      "$ref": "#/$defs/score"
+    },
+    "confidence_components": {
+      "$ref": "#/$defs/confidenceComponents"
+    },
     "contributions": {
       "type": "array",
       "items": {
-        "$ref": "#/$defs/contribution"
+        "$ref": "#/$defs/auditContribution"
       }
     },
     "evidence_refs": {
@@ -83,7 +109,10 @@
       "if": {
         "properties": {
           "status": {
-            "const": "verified"
+            "enum": [
+              "verified",
+              "provisional"
+            ]
           }
         },
         "required": [
@@ -100,31 +129,93 @@
     }
   ],
   "$defs": {
-    "auditId": {
+    "originId": {
       "type": "string",
-      "pattern": "^AID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
     },
     "derivativeId": {
       "type": "string",
       "pattern": "^DID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
-    "traceChainId": {
-      "type": "string",
-      "pattern": "^TCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
-    },
     "traceId": {
       "type": "string",
       "pattern": "^TID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
-    "originId": {
+    "traceChainId": {
       "type": "string",
-      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+      "pattern": "^TCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "evidenceAssessmentId": {
+      "type": "string",
+      "pattern": "^EAID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "contributionAssessmentId": {
+      "type": "string",
+      "pattern": "^CAID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "auditId": {
+      "type": "string",
+      "pattern": "^AID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
     "dateTime": {
       "type": "string",
       "format": "date-time"
     },
-    "contribution": {
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "auditProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "verified_threshold",
+        "provisional_threshold"
+      ],
+      "properties": {
+        "profile_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verified_threshold": {
+          "$ref": "#/$defs/score"
+        },
+        "provisional_threshold": {
+          "$ref": "#/$defs/score"
+        }
+      }
+    },
+    "confidenceComponents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_quality",
+        "trace_completeness",
+        "contribution_stability",
+        "methodology_reliability",
+        "conflict_penalty"
+      ],
+      "properties": {
+        "evidence_quality": {
+          "$ref": "#/$defs/score"
+        },
+        "trace_completeness": {
+          "$ref": "#/$defs/score"
+        },
+        "contribution_stability": {
+          "$ref": "#/$defs/score"
+        },
+        "methodology_reliability": {
+          "$ref": "#/$defs/score"
+        },
+        "conflict_penalty": {
+          "$ref": "#/$defs/score"
+        }
+      }
+    },
+    "auditContribution": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -137,9 +228,7 @@
           "$ref": "#/$defs/originId"
         },
         "weight": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
+          "$ref": "#/$defs/score"
         },
         "evidence_trace_ids": {
           "type": "array",
