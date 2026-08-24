@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:trace_record:v0.2",
-  "title": "CVCP Trace Record v0.2",
+  "$id": "urn:cvcp:schema:trace_record:v0.3",
+  "title": "CVCP Trace Record v0.3",
   "description": "Records a neutral causal event for a Derivative, including explicit parent links and an integrity hash.",
   "type": "object",
   "additionalProperties": false,
@@ -20,7 +20,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "record_type": {
       "const": "trace_record"
