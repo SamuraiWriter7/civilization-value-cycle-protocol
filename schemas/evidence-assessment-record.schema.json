@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:evidence_assessment_record:v0.3",
+  "title": "CVCP Evidence Assessment Record v0.3",
+  "description": "Assesses the quality, coverage, consistency, and directness of Trace evidence for one Origin within a Derivative.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "evidence_assessment_id",
+    "derivative_id",
+    "trace_chain_ref",
+    "origin_id",
+    "evidence_items",
+    "coverage_score",
+    "consistency_score",
+    "directness_score",
+    "evidence_strength",
+    "assessor_id",
+    "assessed_at",
+    "assessment_hash"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.3"
+    },
+    "record_type": {
+      "const": "evidence_assessment_record"
+    },
+    "evidence_assessment_id": {
+      "$ref": "#/$defs/evidenceAssessmentId"
+    },
+    "derivative_id": {
+      "$ref": "#/$defs/derivativeId"
+    },
+    "trace_chain_ref": {
+      "$ref": "#/$defs/traceChainId"
+    },
+    "origin_id": {
+      "$ref": "#/$defs/originId"
+    },
+    "evidence_items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/evidenceItem"
+      }
+    },
+    "coverage_score": {
+      "$ref": "#/$defs/score"
+    },
+    "consistency_score": {
+      "$ref": "#/$defs/score"
+    },
+    "directness_score": {
+      "$ref": "#/$defs/score"
+    },
+    "evidence_strength": {
+      "$ref": "#/$defs/score"
+    },
+    "assessor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assessed_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "assessment_hash": {
+      "$ref": "#/$defs/contentHash"
+    }
+  },
+  "$defs": {
+    "originId": {
+      "type": "string",
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "derivativeId": {
+      "type": "string",
+      "pattern": "^DID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "traceId": {
+      "type": "string",
+      "pattern": "^TID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "traceChainId": {
+      "type": "string",
+      "pattern": "^TCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "evidenceAssessmentId": {
+      "type": "string",
+      "pattern": "^EAID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "contentHash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "sha256",
+            "sha384",
+            "sha512",
+            "blake3"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]+$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "enum": [
+                  "sha256",
+                  "blake3"
+                ]
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "sha384"
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{96}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "sha512"
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "pattern": "^[A-Fa-f0-9]{128}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trace_id",
+        "evidence_type",
+        "relevance",
+        "directness",
+        "reliability"
+      ],
+      "properties": {
+        "trace_id": {
+          "$ref": "#/$defs/traceId"
+        },
+        "evidence_type": {
+          "type": "string",
+          "enum": [
+            "direct_reference",
+            "transformation_dependency",
+            "reasoning_dependency",
+            "decision_dependency",
+            "outcome_dependency",
+            "external_evidence",
+            "other"
+          ]
+        },
+        "relevance": {
+          "$ref": "#/$defs/score"
+        },
+        "directness": {
+          "$ref": "#/$defs/score"
+        },
+        "reliability": {
+          "$ref": "#/$defs/score"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
