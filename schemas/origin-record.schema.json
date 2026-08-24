@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:origin_record:v0.2",
-  "title": "CVCP Origin Record v0.2",
+  "$id": "urn:cvcp:schema:origin_record:v0.3",
+  "title": "CVCP Origin Record v0.3",
   "description": "Registers the source asset, rights, provenance anchor, and access policy for the Civilization Value Cycle Protocol.",
   "type": "object",
   "additionalProperties": false,
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "record_type": {
       "const": "origin_record"
@@ -43,11 +43,11 @@
     },
     "provenance_refs": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "string",
         "minLength": 1
       },
-      "uniqueItems": true,
       "default": []
     },
     "created_at": {
@@ -62,6 +62,11 @@
     "dateTime": {
       "type": "string",
       "format": "date-time"
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
     },
     "contentHash": {
       "type": "object",
@@ -287,9 +292,7 @@
           "type": "boolean"
         },
         "royalty_rate": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1
+          "$ref": "#/$defs/score"
         },
         "terms_uri": {
           "type": "string",
