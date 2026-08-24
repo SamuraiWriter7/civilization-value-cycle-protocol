@@ -1,0 +1,49 @@
+protocol_version: "0.3"
+record_type: audit_record
+
+audit_id: AID:auditor-main/20260824T020500Z/a900
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
+
+trace_chain_ref: TCID:agent-alpha/20260824T010500Z/tc001
+
+trace_refs:
+  - TID:agent-alpha/20260824T010100Z/t001
+  - TID:agent-alpha/20260824T010200Z/t002
+  - TID:agent-alpha/20260824T010300Z/t003
+  - TID:agent-alpha/20260824T010400Z/t004
+
+evidence_assessment_refs:
+  - EAID:assessor-main/20260824T010600Z/ea001
+
+contribution_assessment_ref: CAID:assessor-main/20260824T010700Z/ca001
+
+auditor_id: auditor-main
+status: verified
+
+audit_profile:
+  profile_id: cvcp-standard-audit-v1
+  verified_threshold: 0.80
+  provisional_threshold: 0.50
+
+confidence: 0.9025
+
+confidence_components:
+  evidence_quality: 0.95
+  trace_completeness: 1.0
+  contribution_stability: 0.95
+  methodology_reliability: 0.90
+  conflict_penalty: 0.05
+
+contributions:
+  - origin_id: OID:book/shidenkai-ai/civilization-os/v1
+    weight: 0.90
+    evidence_trace_ids:
+      - TID:agent-alpha/20260824T010100Z/t001
+
+evidence_refs:
+  - EAID:assessor-main/20260824T010600Z/ea001
+  - CAID:assessor-main/20260824T010700Z/ca001
+
+reasoning_summary: Intentional Audit and Contribution Assessment weight mismatch.
+
+audited_at: "2026-08-24T02:05:00Z"
