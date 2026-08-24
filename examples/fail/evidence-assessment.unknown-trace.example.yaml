@@ -1,0 +1,27 @@
+protocol_version: "0.3"
+record_type: evidence_assessment_record
+
+evidence_assessment_id: EAID:assessor-main/20260824T020100Z/ea901
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
+trace_chain_ref: TCID:agent-alpha/20260824T010500Z/tc001
+
+origin_id: OID:book/shidenkai-ai/civilization-os/v1
+
+evidence_items:
+  - trace_id: TID:agent-alpha/20260824T000000Z/missing
+    evidence_type: direct_reference
+    relevance: 1.0
+    directness: 1.0
+    reliability: 1.0
+
+coverage_score: 1.0
+consistency_score: 1.0
+directness_score: 1.0
+evidence_strength: 1.0
+
+assessor_id: assessor-main
+assessed_at: "2026-08-24T02:01:00Z"
+
+assessment_hash:
+  algorithm: sha256
+  value: "8888888888888888888888888888888888888888888888888888888888888888"
