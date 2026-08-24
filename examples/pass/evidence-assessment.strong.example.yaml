@@ -1,0 +1,50 @@
+protocol_version: "0.3"
+record_type: evidence_assessment_record
+
+evidence_assessment_id: EAID:assessor-main/20260824T010600Z/ea001
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
+trace_chain_ref: TCID:agent-alpha/20260824T010500Z/tc001
+
+origin_id: OID:book/shidenkai-ai/civilization-os/v1
+
+evidence_items:
+  - trace_id: TID:agent-alpha/20260824T010100Z/t001
+    evidence_type: direct_reference
+    relevance: 1.0
+    directness: 1.0
+    reliability: 0.98
+    notes: Direct reference to the registered Origin.
+
+  - trace_id: TID:agent-alpha/20260824T010200Z/t002
+    evidence_type: transformation_dependency
+    relevance: 0.95
+    directness: 0.90
+    reliability: 0.95
+    notes: Transformation depends materially on the Origin.
+
+  - trace_id: TID:agent-alpha/20260824T010300Z/t003
+    evidence_type: reasoning_dependency
+    relevance: 0.90
+    directness: 0.90
+    reliability: 0.95
+    notes: Origin influenced the reasoning branch.
+
+  - trace_id: TID:agent-alpha/20260824T010400Z/t004
+    evidence_type: outcome_dependency
+    relevance: 0.95
+    directness: 1.0
+    reliability: 0.97
+    notes: Final result retains material dependency on the Origin.
+
+coverage_score: 0.95
+consistency_score: 0.95
+directness_score: 0.95
+evidence_strength: 0.95
+
+assessor_id: assessor-main
+
+assessed_at: "2026-08-24T01:06:00Z"
+
+assessment_hash:
+  algorithm: sha256
+  value: "5555555555555555555555555555555555555555555555555555555555555555"
