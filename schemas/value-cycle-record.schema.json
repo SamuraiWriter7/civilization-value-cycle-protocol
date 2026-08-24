@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:value_cycle_record:v0.2",
-  "title": "CVCP Value Cycle Record v0.2",
-  "description": "Top-level lifecycle record linking Origin, Derivative, Trace Chain, Audit, Royalty, and State Transition history.",
+  "$id": "urn:cvcp:schema:value_cycle_record:v0.3",
+  "title": "CVCP Value Cycle Record v0.3",
+  "description": "Top-level lifecycle record linking Origin, Derivative, Trace Chain, Evidence Assessment, Contribution Assessment, Audit, Royalty, and State Transition history.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -16,7 +16,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "record_type": {
       "const": "value_cycle_record"
@@ -45,6 +45,17 @@
       "items": {
         "$ref": "#/$defs/traceId"
       }
+    },
+    "evidence_assessment_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/evidenceAssessmentId"
+      }
+    },
+    "contribution_assessment_ref": {
+      "$ref": "#/$defs/contributionAssessmentId"
     },
     "audit_ref": {
       "$ref": "#/$defs/auditId"
@@ -79,6 +90,7 @@
               "derivative_created",
               "trace_recorded",
               "audit_pending",
+              "audit_provisional",
               "audit_verified",
               "royalty_calculated",
               "settlement_pending",
@@ -105,6 +117,7 @@
             "enum": [
               "trace_recorded",
               "audit_pending",
+              "audit_provisional",
               "audit_verified",
               "royalty_calculated",
               "settlement_pending",
@@ -129,6 +142,33 @@
         "properties": {
           "cycle_status": {
             "enum": [
+              "audit_pending",
+              "audit_provisional",
+              "audit_verified",
+              "royalty_calculated",
+              "settlement_pending",
+              "settled",
+              "disputed"
+            ]
+          }
+        },
+        "required": [
+          "cycle_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "evidence_assessment_refs",
+          "contribution_assessment_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cycle_status": {
+            "enum": [
+              "audit_provisional",
               "audit_verified",
               "royalty_calculated",
               "settlement_pending",
@@ -170,10 +210,6 @@
     }
   ],
   "$defs": {
-    "cycleId": {
-      "type": "string",
-      "pattern": "^VCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
-    },
     "originId": {
       "type": "string",
       "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
@@ -182,13 +218,21 @@
       "type": "string",
       "pattern": "^DID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
+    "traceId": {
+      "type": "string",
+      "pattern": "^TID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
     "traceChainId": {
       "type": "string",
       "pattern": "^TCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
-    "traceId": {
+    "evidenceAssessmentId": {
       "type": "string",
-      "pattern": "^TID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+      "pattern": "^EAID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "contributionAssessmentId": {
+      "type": "string",
+      "pattern": "^CAID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
     "auditId": {
       "type": "string",
@@ -202,6 +246,10 @@
       "type": "string",
       "pattern": "^STID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
+    "cycleId": {
+      "type": "string",
+      "pattern": "^VCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
     "cycleStatus": {
       "type": "string",
       "enum": [
@@ -209,6 +257,7 @@
         "derivative_created",
         "trace_recorded",
         "audit_pending",
+        "audit_provisional",
         "audit_verified",
         "royalty_calculated",
         "settlement_pending",
