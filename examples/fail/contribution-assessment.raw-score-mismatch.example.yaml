@@ -1,0 +1,47 @@
+protocol_version: "0.3"
+record_type: contribution_assessment_record
+
+contribution_assessment_id: CAID:assessor-main/20260824T020300Z/ca901
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
+trace_chain_ref: TCID:agent-alpha/20260824T010500Z/tc001
+
+evidence_assessment_refs:
+  - EAID:assessor-main/20260824T010600Z/ea001
+
+methodology:
+  method_id: cvcp-weighted-factor-v1
+  version: "1.0"
+
+  coefficients:
+    reference_depth: 0.15
+    transformation_dependency: 0.25
+    reasoning_influence: 0.20
+    decision_influence: 0.20
+    outcome_influence: 0.20
+
+  evidence_adjustment: multiplicative
+
+contributions:
+  - origin_id: OID:book/shidenkai-ai/civilization-os/v1
+    evidence_assessment_ref: EAID:assessor-main/20260824T010600Z/ea001
+
+    reference_depth: 1.0
+    transformation_dependency: 0.90
+    reasoning_influence: 0.80
+    decision_influence: 0.70
+    outcome_influence: 0.80
+
+    evidence_strength: 0.95
+
+    raw_score: 0.90
+    adjusted_score: 0.855
+    normalized_weight: 1.0
+
+normalization_status: normalized
+
+assessor_id: assessor-main
+assessed_at: "2026-08-24T02:03:00Z"
+
+assessment_hash:
+  algorithm: sha256
+  value: "6666666666666666666666666666666666666666666666666666666666666666"
