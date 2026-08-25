@@ -1,19 +1,19 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: trace_chain_record
 
-trace_chain_id: TCID:agent-alpha/20260819T012200Z/tc904
-derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+trace_chain_id: TCID:agent-alpha/20260824T012200Z/tc904
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
 
 trace_refs:
-  - TID:agent-alpha/20260819T010100Z/t001
-  - TID:agent-alpha/20260819T010200Z/t002
-  - TID:agent-alpha/20260819T010300Z/t003
-  - TID:agent-alpha/20260819T010400Z/t004
+  - TID:agent-alpha/20260824T010100Z/t001
+  - TID:agent-alpha/20260824T010200Z/t002
+  - TID:agent-alpha/20260824T010300Z/t003
+  - TID:agent-alpha/20260824T010400Z/t004
 
-root_trace_id: TID:agent-alpha/20260819T010100Z/t001
+root_trace_id: TID:agent-alpha/20260824T010100Z/t001
 
 terminal_trace_ids:
-  - TID:agent-alpha/20260819T010200Z/t002
+  - TID:agent-alpha/20260824T010200Z/t002
 
 event_count: 4
 
@@ -21,4 +21,4 @@ chain_hash:
   algorithm: sha256
   value: "1111111111111111111111111111111111111111111111111111111111111111"
 
-created_at: "2026-08-19T01:22:00Z"
+created_at: "2026-08-24T01:22:00Z"
