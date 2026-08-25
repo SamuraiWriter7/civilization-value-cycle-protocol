@@ -1,32 +1,32 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: trace_record
 
-trace_id: TID:agent-alpha/20260819T010400Z/t004
-derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+trace_id: TID:agent-alpha/20260824T010400Z/t004
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
 
 sequence: 3
 event_type: result
 
-previous_trace_id: TID:agent-alpha/20260819T010300Z/t003
+previous_trace_id: TID:agent-alpha/20260824T010300Z/t003
 
 causal_parent_refs:
-  - TID:agent-alpha/20260819T010200Z/t002
+  - TID:agent-alpha/20260824T010200Z/t002
 
 input_refs:
   - stage:transform
   - stage:reasoning
 
 output_refs:
-  - DID:agent-alpha/task-001/20260819T010000Z/n001
+  - DID:agent-alpha/task-001/20260824T010000Z/n001
 
-timestamp: "2026-08-19T01:04:00Z"
+timestamp: "2026-08-24T01:04:00Z"
 
 evidence:
   - evidence_type: hash
-    value: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    value: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 
 event_hash:
   algorithm: sha256
   value: "4444444444444444444444444444444444444444444444444444444444444444"
 
-summary: Transformation and reasoning branches were merged into the final result.
+summary: Transformation and reasoning branches were merged into the final Derivative result.
