@@ -1,19 +1,23 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: state_transition_record
 
-transition_id: STID:cycle-main/20260819T010710Z/st005
-cycle_id: VCID:cycle-main/20260819T010000Z/c001
+transition_id: STID:cycle-main/20260824T010910Z/st005
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
 
 previous_status: audit_verified
 next_status: royalty_calculated
 
 evidence_refs:
-  - RID:royalty-engine/20260819T010700Z/r001
+  - RID:royalty-engine/20260824T010900Z/r001
+  - AID:auditor-main/20260824T010800Z/a001
+  - CAID:assessor-main/20260824T010700Z/ca001
 
-transitioned_at: "2026-08-19T01:07:10Z"
+transitioned_at: "2026-08-24T01:09:10Z"
+
 actor_id: cycle-controller
-reason: Royalty allocation was calculated from the verified Audit.
+
+reason: Royalty allocation was calculated from the verified Audit and Contribution Assessment.
 
 transition_hash:
   algorithm: sha256
-  value: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  value: "5555555555555555555555555555555555555555555555555555555555555555"
