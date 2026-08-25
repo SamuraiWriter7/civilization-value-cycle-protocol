@@ -1,19 +1,23 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: state_transition_record
 
-transition_id: STID:cycle-main/20260819T010610Z/st004
-cycle_id: VCID:cycle-main/20260819T010000Z/c001
+transition_id: STID:cycle-main/20260824T010810Z/st004
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
 
 previous_status: audit_pending
 next_status: audit_verified
 
 evidence_refs:
-  - AID:auditor-main/20260819T010600Z/a001
+  - AID:auditor-main/20260824T010800Z/a001
+  - EAID:assessor-main/20260824T010600Z/ea001
+  - CAID:assessor-main/20260824T010700Z/ca001
 
-transitioned_at: "2026-08-19T01:06:10Z"
+transitioned_at: "2026-08-24T01:08:10Z"
+
 actor_id: cycle-controller
-reason: Audit verification was completed.
+
+reason: Audit verified the Contribution Assessment with sufficient confidence.
 
 transition_hash:
   algorithm: sha256
-  value: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  value: "4444444444444444444444444444444444444444444444444444444444444444"
