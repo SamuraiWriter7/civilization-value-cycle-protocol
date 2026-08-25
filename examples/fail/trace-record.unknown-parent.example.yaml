@@ -1,13 +1,14 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: trace_record
 
-trace_id: TID:agent-alpha/20260819T011000Z/t900
-derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+trace_id: TID:agent-alpha/20260824T011000Z/t900
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
 
 sequence: 4
 event_type: decision
 
-previous_trace_id: TID:agent-alpha/20260819T000000Z/missing
+previous_trace_id: TID:agent-alpha/20260824T000000Z/missing
+
 causal_parent_refs: []
 
 input_refs:
@@ -16,14 +17,14 @@ input_refs:
 output_refs:
   - stage:decision
 
-timestamp: "2026-08-19T01:10:00Z"
+timestamp: "2026-08-24T01:10:00Z"
 
 evidence:
   - evidence_type: statement
-    value: intentional unknown-parent failure
+    value: Intentional unknown-parent failure.
 
 event_hash:
   algorithm: sha256
   value: "9999999999999999999999999999999999999999999999999999999999999999"
 
-summary: This Trace intentionally references a nonexistent parent Trace.
+summary: This Trace intentionally references a parent Trace that does not exist.
