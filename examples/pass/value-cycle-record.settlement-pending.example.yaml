@@ -1,33 +1,39 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: value_cycle_record
 
-cycle_id: VCID:cycle-main/20260819T010000Z/c001
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
 
 origin_refs:
   - OID:book/shidenkai-ai/civilization-os/v1
 
-derivative_ref: DID:agent-alpha/task-001/20260819T010000Z/n001
+derivative_ref: DID:agent-alpha/task-001/20260824T010000Z/n001
 
-trace_chain_ref: TCID:agent-alpha/20260819T010500Z/tc001
+trace_chain_ref: TCID:agent-alpha/20260824T010500Z/tc001
 
 trace_refs:
-  - TID:agent-alpha/20260819T010100Z/t001
-  - TID:agent-alpha/20260819T010200Z/t002
-  - TID:agent-alpha/20260819T010300Z/t003
-  - TID:agent-alpha/20260819T010400Z/t004
+  - TID:agent-alpha/20260824T010100Z/t001
+  - TID:agent-alpha/20260824T010200Z/t002
+  - TID:agent-alpha/20260824T010300Z/t003
+  - TID:agent-alpha/20260824T010400Z/t004
 
-audit_ref: AID:auditor-main/20260819T010600Z/a001
-royalty_ref: RID:royalty-engine/20260819T010700Z/r001
+evidence_assessment_refs:
+  - EAID:assessor-main/20260824T010600Z/ea001
+
+contribution_assessment_ref: CAID:assessor-main/20260824T010700Z/ca001
+
+audit_ref: AID:auditor-main/20260824T010800Z/a001
+
+royalty_ref: RID:royalty-engine/20260824T010900Z/r001
 
 transition_refs:
-  - STID:cycle-main/20260819T010010Z/st001
-  - STID:cycle-main/20260819T010510Z/st002
-  - STID:cycle-main/20260819T010520Z/st003
-  - STID:cycle-main/20260819T010610Z/st004
-  - STID:cycle-main/20260819T010710Z/st005
-  - STID:cycle-main/20260819T010720Z/st006
+  - STID:cycle-main/20260824T010010Z/st001
+  - STID:cycle-main/20260824T010510Z/st002
+  - STID:cycle-main/20260824T010710Z/st003
+  - STID:cycle-main/20260824T010810Z/st004
+  - STID:cycle-main/20260824T010910Z/st005
+  - STID:cycle-main/20260824T010920Z/st006
 
 cycle_status: settlement_pending
 
-created_at: "2026-08-19T01:00:00Z"
-updated_at: "2026-08-19T01:07:20Z"
+created_at: "2026-08-24T01:00:00Z"
+updated_at: "2026-08-24T01:09:20Z"
