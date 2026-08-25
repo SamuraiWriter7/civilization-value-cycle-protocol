@@ -1,19 +1,21 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: state_transition_record
 
-transition_id: STID:cycle-main/20260819T010510Z/st002
-cycle_id: VCID:cycle-main/20260819T010000Z/c001
+transition_id: STID:cycle-main/20260824T010510Z/st002
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
 
 previous_status: derivative_created
 next_status: trace_recorded
 
 evidence_refs:
-  - TCID:agent-alpha/20260819T010500Z/tc001
+  - TCID:agent-alpha/20260824T010500Z/tc001
 
-transitioned_at: "2026-08-19T01:05:10Z"
+transitioned_at: "2026-08-24T01:05:10Z"
+
 actor_id: cycle-controller
-reason: A complete Trace Chain was recorded.
+
+reason: Complete causal Trace Chain was recorded for the Derivative.
 
 transition_hash:
   algorithm: sha256
-  value: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  value: "2222222222222222222222222222222222222222222222222222222222222222"
