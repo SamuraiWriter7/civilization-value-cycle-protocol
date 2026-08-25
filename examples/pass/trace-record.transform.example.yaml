@@ -1,13 +1,13 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: trace_record
 
-trace_id: TID:agent-alpha/20260819T010200Z/t002
-derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+trace_id: TID:agent-alpha/20260824T010200Z/t002
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
 
 sequence: 1
 event_type: transform
 
-previous_trace_id: TID:agent-alpha/20260819T010100Z/t001
+previous_trace_id: TID:agent-alpha/20260824T010100Z/t001
 causal_parent_refs: []
 
 input_refs:
@@ -16,14 +16,14 @@ input_refs:
 output_refs:
   - stage:transform
 
-timestamp: "2026-08-19T01:02:00Z"
+timestamp: "2026-08-24T01:02:00Z"
 
 evidence:
   - evidence_type: statement
-    value: source material transformed
+    value: Source material was transformed into an intermediate representation.
 
 event_hash:
   algorithm: sha256
   value: "2222222222222222222222222222222222222222222222222222222222222222"
 
-summary: Source material was transformed.
+summary: Source material was transformed into an intermediate representation.
