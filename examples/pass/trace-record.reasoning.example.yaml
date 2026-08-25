@@ -1,13 +1,13 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: trace_record
 
-trace_id: TID:agent-alpha/20260819T010300Z/t003
-derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+trace_id: TID:agent-alpha/20260824T010300Z/t003
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
 
 sequence: 2
 event_type: reasoning
 
-previous_trace_id: TID:agent-alpha/20260819T010100Z/t001
+previous_trace_id: TID:agent-alpha/20260824T010100Z/t001
 causal_parent_refs: []
 
 input_refs:
@@ -16,14 +16,14 @@ input_refs:
 output_refs:
   - stage:reasoning
 
-timestamp: "2026-08-19T01:03:00Z"
+timestamp: "2026-08-24T01:03:00Z"
 
 evidence:
   - evidence_type: statement
-    value: independent reasoning branch executed
+    value: An independent reasoning branch was derived from the registered Origin.
 
 event_hash:
   algorithm: sha256
   value: "3333333333333333333333333333333333333333333333333333333333333333"
 
-summary: A reasoning branch was produced from the source.
+summary: A reasoning branch was produced independently from the referenced Origin.
