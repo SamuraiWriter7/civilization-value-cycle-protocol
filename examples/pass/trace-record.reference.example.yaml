@@ -1,8 +1,8 @@
-protocol_version: "0.2"
+protocol_version: "0.3"
 record_type: trace_record
 
-trace_id: TID:agent-alpha/20260819T010100Z/t001
-derivative_id: DID:agent-alpha/task-001/20260819T010000Z/n001
+trace_id: TID:agent-alpha/20260824T010100Z/t001
+derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
 
 sequence: 0
 event_type: reference
@@ -15,7 +15,7 @@ input_refs:
 output_refs:
   - stage:source
 
-timestamp: "2026-08-19T01:01:00Z"
+timestamp: "2026-08-24T01:01:00Z"
 
 evidence:
   - evidence_type: record_ref
@@ -25,4 +25,4 @@ event_hash:
   algorithm: sha256
   value: "1111111111111111111111111111111111111111111111111111111111111111"
 
-summary: Origin material was referenced.
+summary: Registered Origin material was referenced as the source of the Derivative.
