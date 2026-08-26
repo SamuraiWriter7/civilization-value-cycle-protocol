@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:royalty_record:v0.3",
-  "title": "CVCP Royalty Record v0.3",
-  "description": "Records value allocation and its Contribution Assessment and Audit basis without granting settlement authority to the generating AI agent.",
+  "$id": "urn:cvcp:schema:royalty_record:v0.4",
+  "title": "CVCP Royalty Record v0.4",
+  "description": "Records value allocation and its verified attribution basis before external settlement execution.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -19,7 +19,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.3"
+      "const": "0.4"
     },
     "record_type": {
       "const": "royalty_record"
@@ -47,8 +47,18 @@
         "$ref": "#/$defs/allocation"
       }
     },
+    "settlement_request_ref": {
+      "$ref": "#/$defs/settlementRequestId"
+    },
+    "settlement_receipt_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/settlementReceiptId"
+      }
+    },
     "settlement_status": {
-      "type": "string",
       "enum": [
         "not_required",
         "provisional",
@@ -59,10 +69,6 @@
         "disputed"
       ]
     },
-    "settlement_ref": {
-      "type": "string",
-      "minLength": 1
-    },
     "created_at": {
       "$ref": "#/$defs/dateTime"
     }
@@ -71,37 +77,14 @@
     {
       "if": {
         "properties": {
-          "settlement_status": {
-            "const": "settled"
-          }
-        },
-        "required": [
-          "settlement_status"
-        ]
-      },
-      "then": {
-        "required": [
-          "settlement_ref"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
           "royalty_basis": {
             "properties": {
               "audit_status": {
                 "const": "provisional"
               }
-            },
-            "required": [
-              "audit_status"
-            ]
+            }
           }
-        },
-        "required": [
-          "royalty_basis"
-        ]
+        }
       },
       "then": {
         "properties": {
@@ -126,15 +109,9 @@
                   "rejected"
                 ]
               }
-            },
-            "required": [
-              "audit_status"
-            ]
+            }
           }
-        },
-        "required": [
-          "royalty_basis"
-        ]
+        }
       },
       "then": {
         "properties": {
@@ -145,6 +122,41 @@
             ]
           }
         }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "settlement_status": {
+            "enum": [
+              "processing",
+              "settled",
+              "failed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "settlement_request_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "settlement_status": {
+            "enum": [
+              "settled",
+              "failed"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "settlement_receipt_refs"
+        ]
       }
     }
   ],
@@ -165,6 +177,14 @@
       "type": "string",
       "pattern": "^RID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
+    "settlementRequestId": {
+      "type": "string",
+      "pattern": "^SRQID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "settlementReceiptId": {
+      "type": "string",
+      "pattern": "^SRCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
     "dateTime": {
       "type": "string",
       "format": "date-time"
@@ -183,7 +203,6 @@
       ],
       "properties": {
         "type": {
-          "type": "string",
           "enum": [
             "fiat",
             "token",
@@ -205,10 +224,7 @@
               "type": {
                 "const": "fiat"
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           },
           "then": {
             "properties": {
@@ -261,7 +277,6 @@
           "$ref": "#/$defs/score"
         },
         "audit_status": {
-          "type": "string",
           "enum": [
             "verified",
             "provisional",
