@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:contribution_assessment_record:v0.3",
-  "title": "CVCP Contribution Assessment Record v0.3",
-  "description": "Explains and normalizes Origin contribution weights using disclosed factors, evidence strength, and methodology.",
+  "$id": "urn:cvcp:schema:contribution_assessment_record:v0.4",
+  "title": "CVCP Contribution Assessment Record v0.4",
+  "description": "Explains and normalizes Origin contribution weights.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -21,7 +21,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.3"
+      "const": "0.4"
     },
     "record_type": {
       "const": "contribution_assessment_record"
@@ -54,7 +54,6 @@
       }
     },
     "normalization_status": {
-      "type": "string",
       "enum": [
         "normalized",
         "pending"
@@ -110,7 +109,6 @@
       ],
       "properties": {
         "algorithm": {
-          "type": "string",
           "enum": [
             "sha256",
             "sha384",
@@ -122,69 +120,7 @@
           "type": "string",
           "pattern": "^[A-Fa-f0-9]+$"
         }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "enum": [
-                  "sha256",
-                  "blake3"
-                ]
-              }
-            },
-            "required": [
-              "algorithm"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{64}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha384"
-              }
-            },
-            "required": [
-              "algorithm"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{96}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha512"
-              }
-            },
-            "required": [
-              "algorithm"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{128}$"
-              }
-            }
-          }
-        }
-      ]
+      }
     },
     "methodology": {
       "type": "object",
@@ -233,7 +169,6 @@
           }
         },
         "evidence_adjustment": {
-          "type": "string",
           "enum": [
             "none",
             "multiplicative"
