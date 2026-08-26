@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:origin_record:v0.3",
-  "title": "CVCP Origin Record v0.3",
-  "description": "Registers the source asset, rights, provenance anchor, and access policy for the Civilization Value Cycle Protocol.",
+  "$id": "urn:cvcp:schema:origin_record:v0.4",
+  "title": "CVCP Origin Record v0.4",
+  "description": "Registers the source asset, rights, provenance anchor, and access policy.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.3"
+      "const": "0.4"
     },
     "record_type": {
       "const": "origin_record"
