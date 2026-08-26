@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:derivative_record:v0.3",
-  "title": "CVCP Derivative Record v0.3",
-  "description": "Registers an AI-generated or AI-mediated derivative output or action and its declared Origin dependencies.",
+  "$id": "urn:cvcp:schema:derivative_record:v0.4",
+  "title": "CVCP Derivative Record v0.4",
+  "description": "Registers an AI-generated or AI-mediated derivative and its declared Origin dependencies.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.3"
+      "const": "0.4"
     },
     "record_type": {
       "const": "derivative_record"
@@ -94,7 +94,6 @@
       ],
       "properties": {
         "algorithm": {
-          "type": "string",
           "enum": [
             "sha256",
             "sha384",
@@ -117,10 +116,7 @@
                   "blake3"
                 ]
               }
-            },
-            "required": [
-              "algorithm"
-            ]
+            }
           },
           "then": {
             "properties": {
@@ -136,10 +132,7 @@
               "algorithm": {
                 "const": "sha384"
               }
-            },
-            "required": [
-              "algorithm"
-            ]
+            }
           },
           "then": {
             "properties": {
@@ -155,10 +148,7 @@
               "algorithm": {
                 "const": "sha512"
               }
-            },
-            "required": [
-              "algorithm"
-            ]
+            }
           },
           "then": {
             "properties": {
@@ -182,7 +172,6 @@
           "$ref": "#/$defs/originId"
         },
         "status": {
-          "type": "string",
           "enum": [
             "satisfied",
             "conditional",
