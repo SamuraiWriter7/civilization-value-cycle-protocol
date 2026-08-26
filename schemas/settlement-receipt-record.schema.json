@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:settlement_receipt_record:v0.4",
+  "title": "CVCP Settlement Receipt Record v0.4",
+  "description": "Records the independently receipted result of an externally executed Settlement Request.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "settlement_receipt_id",
+    "settlement_request_id",
+    "royalty_id",
+    "executor_id",
+    "execution_status",
+    "executed_allocations",
+    "executed_at",
+    "receipt_hash",
+    "evidence_refs"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.4"
+    },
+    "record_type": {
+      "const": "settlement_receipt_record"
+    },
+    "settlement_receipt_id": {
+      "$ref": "#/$defs/settlementReceiptId"
+    },
+    "settlement_request_id": {
+      "$ref": "#/$defs/settlementRequestId"
+    },
+    "royalty_id": {
+      "$ref": "#/$defs/royaltyId"
+    },
+    "executor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_status": {
+      "enum": [
+        "processing",
+        "settled",
+        "failed",
+        "disputed"
+      ]
+    },
+    "executed_allocations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/executedAllocation"
+      }
+    },
+    "external_transaction_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "failure_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "supersedes_ref": {
+      "$ref": "#/$defs/settlementReceiptId"
+    },
+    "executed_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "receipt_hash": {
+      "$ref": "#/$defs/contentHash"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "execution_status": {
+            "const": "settled"
+          }
+        },
+        "required": [
+          "execution_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "external_transaction_ref"
+        ],
+        "properties": {
+          "executed_allocations": {
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/executedAllocation"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "settled"
+                    }
+                  },
+                  "required": [
+                    "external_transfer_ref"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution_status": {
+            "const": "failed"
+          }
+        },
+        "required": [
+          "execution_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "failure_reason"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "originId": {
+      "type": "string",
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "royaltyId": {
+      "type": "string",
+      "pattern": "^RID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "settlementRequestId": {
+      "type": "string",
+      "pattern": "^SRQID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "settlementReceiptId": {
+      "type": "string",
+      "pattern": "^SRCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contentHash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "enum": [
+            "sha256",
+            "sha384",
+            "sha512",
+            "blake3"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]+$"
+        }
+      }
+    },
+    "executedAllocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allocation_id",
+        "origin_id",
+        "beneficiary_id",
+        "requested_amount",
+        "executed_amount",
+        "status"
+      ],
+      "properties": {
+        "allocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "origin_id": {
+          "$ref": "#/$defs/originId"
+        },
+        "beneficiary_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requested_amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "executed_amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "processing",
+            "settled",
+            "failed",
+            "disputed"
+          ]
+        },
+        "external_transfer_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
