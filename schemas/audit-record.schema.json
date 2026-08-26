@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:audit_record:v0.3",
-  "title": "CVCP Audit Record v0.3",
-  "description": "Audits Trace, Evidence Assessment, and Contribution Assessment records and expresses confidence in the resulting attribution.",
+  "$id": "urn:cvcp:schema:audit_record:v0.4",
+  "title": "CVCP Audit Record v0.4",
+  "description": "Audits Evidence and Contribution Assessments and expresses attribution confidence.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -26,7 +26,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.3"
+      "const": "0.4"
     },
     "record_type": {
       "const": "audit_record"
@@ -64,7 +64,6 @@
       "minLength": 1
     },
     "status": {
-      "type": "string",
       "enum": [
         "verified",
         "provisional",
@@ -114,10 +113,7 @@
               "provisional"
             ]
           }
-        },
-        "required": [
-          "status"
-        ]
+        }
       },
       "then": {
         "properties": {
