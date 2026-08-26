@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:settlement_request_record:v0.4",
+  "title": "CVCP Settlement Request Record v0.4",
+  "description": "Requests execution of a verified Royalty allocation through an externally authorized settlement executor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "settlement_request_id",
+    "royalty_id",
+    "audit_id",
+    "value_unit",
+    "allocations",
+    "requested_by",
+    "authorization_refs",
+    "execution_authority",
+    "idempotency_key",
+    "request_status",
+    "requested_at",
+    "request_hash"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.4"
+    },
+    "record_type": {
+      "const": "settlement_request_record"
+    },
+    "settlement_request_id": {
+      "$ref": "#/$defs/settlementRequestId"
+    },
+    "royalty_id": {
+      "$ref": "#/$defs/royaltyId"
+    },
+    "audit_id": {
+      "$ref": "#/$defs/auditId"
+    },
+    "value_unit": {
+      "$ref": "#/$defs/valueUnit"
+    },
+    "allocations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/settlementAllocation"
+      }
+    },
+    "requested_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authorization_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "execution_authority": {
+      "const": "external"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "request_status": {
+      "enum": [
+        "requested",
+        "accepted",
+        "rejected",
+        "expired",
+        "cancelled"
+      ]
+    },
+    "requested_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "expires_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "request_hash": {
+      "$ref": "#/$defs/contentHash"
+    }
+  },
+  "$defs": {
+    "originId": {
+      "type": "string",
+      "pattern": "^OID:[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "royaltyId": {
+      "type": "string",
+      "pattern": "^RID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "auditId": {
+      "type": "string",
+      "pattern": "^AID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "settlementRequestId": {
+      "type": "string",
+      "pattern": "^SRQID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contentHash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "enum": [
+            "sha256",
+            "sha384",
+            "sha512",
+            "blake3"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]+$"
+        }
+      }
+    },
+    "valueUnit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "code"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "fiat",
+            "token",
+            "credit",
+            "point",
+            "other"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "fiat"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "code": {
+                "pattern": "^[A-Z]{3}$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "settlementAllocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allocation_id",
+        "origin_id",
+        "beneficiary_id",
+        "destination_ref",
+        "amount"
+      ],
+      "properties": {
+        "allocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "origin_id": {
+          "$ref": "#/$defs/originId"
+        },
+        "beneficiary_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "destination_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "memo": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
