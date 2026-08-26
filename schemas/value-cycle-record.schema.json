@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:value_cycle_record:v0.3",
-  "title": "CVCP Value Cycle Record v0.3",
-  "description": "Top-level lifecycle record linking Origin, Derivative, Trace Chain, Evidence Assessment, Contribution Assessment, Audit, Royalty, and State Transition history.",
+  "$id": "urn:cvcp:schema:value_cycle_record:v0.4",
+  "title": "CVCP Value Cycle Record v0.4",
+  "description": "Top-level lifecycle record linking Origin through external Settlement Receipt.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -16,7 +16,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.3"
+      "const": "0.4"
     },
     "record_type": {
       "const": "value_cycle_record"
@@ -63,6 +63,17 @@
     "royalty_ref": {
       "$ref": "#/$defs/royaltyId"
     },
+    "settlement_request_ref": {
+      "$ref": "#/$defs/settlementRequestId"
+    },
+    "settlement_receipt_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/settlementReceiptId"
+      }
+    },
     "transition_refs": {
       "type": "array",
       "minItems": 1,
@@ -94,14 +105,13 @@
               "audit_verified",
               "royalty_calculated",
               "settlement_pending",
+              "settlement_processing",
+              "settlement_failed",
               "settled",
               "disputed"
             ]
           }
-        },
-        "required": [
-          "cycle_status"
-        ]
+        }
       },
       "then": {
         "required": [
@@ -121,14 +131,13 @@
               "audit_verified",
               "royalty_calculated",
               "settlement_pending",
+              "settlement_processing",
+              "settlement_failed",
               "settled",
               "disputed"
             ]
           }
-        },
-        "required": [
-          "cycle_status"
-        ]
+        }
       },
       "then": {
         "required": [
@@ -147,14 +156,13 @@
               "audit_verified",
               "royalty_calculated",
               "settlement_pending",
+              "settlement_processing",
+              "settlement_failed",
               "settled",
               "disputed"
             ]
           }
-        },
-        "required": [
-          "cycle_status"
-        ]
+        }
       },
       "then": {
         "required": [
@@ -172,14 +180,13 @@
               "audit_verified",
               "royalty_calculated",
               "settlement_pending",
+              "settlement_processing",
+              "settlement_failed",
               "settled",
               "disputed"
             ]
           }
-        },
-        "required": [
-          "cycle_status"
-        ]
+        }
       },
       "then": {
         "required": [
@@ -194,17 +201,53 @@
             "enum": [
               "royalty_calculated",
               "settlement_pending",
+              "settlement_processing",
+              "settlement_failed",
               "settled"
             ]
           }
-        },
-        "required": [
-          "cycle_status"
-        ]
+        }
       },
       "then": {
         "required": [
           "royalty_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cycle_status": {
+            "enum": [
+              "settlement_pending",
+              "settlement_processing",
+              "settlement_failed",
+              "settled"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "settlement_request_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cycle_status": {
+            "enum": [
+              "settlement_processing",
+              "settlement_failed",
+              "settled"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "settlement_receipt_refs"
         ]
       }
     }
@@ -242,6 +285,14 @@
       "type": "string",
       "pattern": "^RID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
     },
+    "settlementRequestId": {
+      "type": "string",
+      "pattern": "^SRQID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "settlementReceiptId": {
+      "type": "string",
+      "pattern": "^SRCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
     "transitionId": {
       "type": "string",
       "pattern": "^STID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
@@ -261,6 +312,8 @@
         "audit_verified",
         "royalty_calculated",
         "settlement_pending",
+        "settlement_processing",
+        "settlement_failed",
         "settled",
         "disputed"
       ]
