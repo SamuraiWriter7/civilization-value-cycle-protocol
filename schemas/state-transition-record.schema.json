@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:state_transition_record:v0.3",
-  "title": "CVCP State Transition Record v0.3",
+  "$id": "urn:cvcp:schema:state_transition_record:v0.4",
+  "title": "CVCP State Transition Record v0.4",
   "description": "Records one auditable transition between Value Cycle states.",
   "type": "object",
   "additionalProperties": false,
@@ -20,7 +20,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.3"
+      "const": "0.4"
     },
     "record_type": {
       "const": "state_transition_record"
@@ -81,6 +81,8 @@
         "audit_verified",
         "royalty_calculated",
         "settlement_pending",
+        "settlement_processing",
+        "settlement_failed",
         "settled",
         "disputed"
       ]
@@ -98,7 +100,6 @@
       ],
       "properties": {
         "algorithm": {
-          "type": "string",
           "enum": [
             "sha256",
             "sha384",
@@ -110,69 +111,7 @@
           "type": "string",
           "pattern": "^[A-Fa-f0-9]+$"
         }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "enum": [
-                  "sha256",
-                  "blake3"
-                ]
-              }
-            },
-            "required": [
-              "algorithm"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{64}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha384"
-              }
-            },
-            "required": [
-              "algorithm"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{96}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha512"
-              }
-            },
-            "required": [
-              "algorithm"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{128}$"
-              }
-            }
-          }
-        }
-      ]
+      }
     }
   }
 }
