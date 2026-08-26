@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:evidence_assessment_record:v0.3",
-  "title": "CVCP Evidence Assessment Record v0.3",
-  "description": "Assesses the quality, coverage, consistency, and directness of Trace evidence for one Origin within a Derivative.",
+  "$id": "urn:cvcp:schema:evidence_assessment_record:v0.4",
+  "title": "CVCP Evidence Assessment Record v0.4",
+  "description": "Assesses Trace evidence supporting one Origin contribution.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -23,7 +23,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.3"
+      "const": "0.4"
     },
     "record_type": {
       "const": "evidence_assessment_record"
@@ -109,7 +109,6 @@
       ],
       "properties": {
         "algorithm": {
-          "type": "string",
           "enum": [
             "sha256",
             "sha384",
@@ -132,53 +131,12 @@
                   "blake3"
                 ]
               }
-            },
-            "required": [
-              "algorithm"
-            ]
+            }
           },
           "then": {
             "properties": {
               "value": {
                 "pattern": "^[A-Fa-f0-9]{64}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha384"
-              }
-            },
-            "required": [
-              "algorithm"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{96}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha512"
-              }
-            },
-            "required": [
-              "algorithm"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{128}$"
               }
             }
           }
@@ -200,7 +158,6 @@
           "$ref": "#/$defs/traceId"
         },
         "evidence_type": {
-          "type": "string",
           "enum": [
             "direct_reference",
             "transformation_dependency",
