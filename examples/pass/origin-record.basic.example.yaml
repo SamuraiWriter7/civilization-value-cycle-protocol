@@ -1,4 +1,4 @@
-protocol_version: "0.3"
+protocol_version: "0.4"
 record_type: origin_record
 
 origin_id: OID:book/shidenkai-ai/civilization-os/v1
