@@ -1,4 +1,4 @@
-protocol_version: "0.3"
+protocol_version: "0.4"
 record_type: evidence_assessment_record
 
 evidence_assessment_id: EAID:assessor-main/20260824T020000Z/ea900
