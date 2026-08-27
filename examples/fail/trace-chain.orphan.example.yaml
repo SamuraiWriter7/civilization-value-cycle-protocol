@@ -2,7 +2,7 @@ fixture_type: semantic_scenario
 name: trace-chain-orphan
 
 records:
-  - protocol_version: "0.3"
+  - protocol_version: "0.4"
     record_type: trace_record
 
     trace_id: TID:agent-alpha/20260824T011500Z/t920
