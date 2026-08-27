@@ -1,4 +1,4 @@
-protocol_version: "0.3"
+protocol_version: "0.4"
 record_type: value_cycle_record
 
 cycle_id: VCID:cycle-main/20260824T010000Z/c001
