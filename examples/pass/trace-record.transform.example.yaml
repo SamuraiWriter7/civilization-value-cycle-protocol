@@ -1,4 +1,4 @@
-protocol_version: "0.3"
+protocol_version: "0.4"
 record_type: trace_record
 
 trace_id: TID:agent-alpha/20260824T010200Z/t002
