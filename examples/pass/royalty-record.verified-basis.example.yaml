@@ -1,4 +1,4 @@
-protocol_version: "0.3"
+protocol_version: "0.4"
 record_type: royalty_record
 
 royalty_id: RID:royalty-engine/20260824T010900Z/r001
@@ -21,6 +21,12 @@ allocations:
     royalty_rate: 0.10
     amount: 10.0
 
-settlement_status: pending
+settlement_request_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+
+settlement_receipt_refs:
+  - SRCID:external-executor/20260826T020100Z/src001
+  - SRCID:external-executor/20260826T020200Z/src002
+
+settlement_status: settled
 
 created_at: "2026-08-24T01:09:00Z"
