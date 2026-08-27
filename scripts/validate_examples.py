@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import math
 import sys
-from collections import deque
+from collections import defaultdict, deque
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -44,6 +44,12 @@ SCHEMA_FILES = {
     "royalty_record":
         SCHEMA_DIR / "royalty-record.schema.json",
 
+    "settlement_request_record":
+        SCHEMA_DIR / "settlement-request-record.schema.json",
+
+    "settlement_receipt_record":
+        SCHEMA_DIR / "settlement-receipt-record.schema.json",
+
     "state_transition_record":
         SCHEMA_DIR / "state-transition-record.schema.json",
 
@@ -63,6 +69,10 @@ ID_FIELDS = {
         "contribution_assessment_id",
     "audit_record": "audit_id",
     "royalty_record": "royalty_id",
+    "settlement_request_record":
+        "settlement_request_id",
+    "settlement_receipt_record":
+        "settlement_receipt_id",
     "state_transition_record": "transition_id",
     "value_cycle_record": "cycle_id",
 }
@@ -115,10 +125,30 @@ LEGAL_TRANSITIONS = {
     ),
     (
         "settlement_pending",
-        "settled",
+        "settlement_processing",
     ),
     (
         "settlement_pending",
+        "disputed",
+    ),
+    (
+        "settlement_processing",
+        "settled",
+    ),
+    (
+        "settlement_processing",
+        "settlement_failed",
+    ),
+    (
+        "settlement_processing",
+        "disputed",
+    ),
+    (
+        "settlement_failed",
+        "settlement_pending",
+    ),
+    (
+        "settled",
         "disputed",
     ),
     (
@@ -165,7 +195,6 @@ def load_document(
     try:
         if path.suffix.lower() == ".json":
             data = json.loads(text)
-
         else:
             data = yaml.safe_load(text)
 
@@ -406,7 +435,6 @@ def build_index(
                 f"duplicate {id_field}: "
                 f"{record_id}"
             )
-
             continue
 
         index[
@@ -500,6 +528,70 @@ def audit_confidence(
     )
 
 
+def unit_key(
+    value_unit: dict[str, Any],
+) -> tuple[str, str]:
+
+    return (
+        str(
+            value_unit["type"]
+        ),
+        str(
+            value_unit["code"]
+        ),
+    )
+
+
+def royalty_amounts_by_origin(
+    royalty: dict[str, Any],
+) -> dict[str, float]:
+
+    result: dict[
+        str,
+        float,
+    ] = defaultdict(float)
+
+    for allocation in royalty[
+        "allocations"
+    ]:
+        result[
+            allocation[
+                "origin_id"
+            ]
+        ] += float(
+            allocation[
+                "amount"
+            ]
+        )
+
+    return dict(result)
+
+
+def request_amounts_by_origin(
+    request: dict[str, Any],
+) -> dict[str, float]:
+
+    result: dict[
+        str,
+        float,
+    ] = defaultdict(float)
+
+    for allocation in request[
+        "allocations"
+    ]:
+        result[
+            allocation[
+                "origin_id"
+            ]
+        ] += float(
+            allocation[
+                "amount"
+            ]
+        )
+
+    return dict(result)
+
+
 def semantic_errors(
     records: list[
         dict[str, Any]
@@ -542,6 +634,14 @@ def semantic_errors(
         "royalty_record"
     ]
 
+    settlement_requests = index[
+        "settlement_request_record"
+    ]
+
+    settlement_receipts = index[
+        "settlement_receipt_record"
+    ]
+
     transitions = index[
         "state_transition_record"
     ]
@@ -552,7 +652,6 @@ def semantic_errors(
 
     # ======================================================
     # Origin / Derivative
-    # CVCP-01 / CVCP-07
     # ======================================================
 
     for (
@@ -643,8 +742,7 @@ def semantic_errors(
                     )
 
     # ======================================================
-    # Trace parent integrity
-    # CVCP-14 / 15 / 17 / 18
+    # Trace parents
     # ======================================================
 
     for (
@@ -728,8 +826,7 @@ def semantic_errors(
                 )
 
     # ======================================================
-    # Trace Chain DAG integrity
-    # CVCP-13 / 16 / 19 / 20
+    # Trace Chain
     # ======================================================
 
     for (
@@ -1017,7 +1114,6 @@ def semantic_errors(
 
     # ======================================================
     # Evidence Assessment
-    # CVCP-26 / 27 / 28 / 38
     # ======================================================
 
     for (
@@ -1041,16 +1137,16 @@ def semantic_errors(
             derivative_id
         )
 
+        chain = chains.get(
+            chain_id
+        )
+
         if derivative is None:
             errors.append(
                 f"{assessment_id}: "
                 f"unknown Derivative "
                 f"{derivative_id}"
             )
-
-        chain = chains.get(
-            chain_id
-        )
 
         if chain is None:
 
@@ -1175,7 +1271,6 @@ def semantic_errors(
 
     # ======================================================
     # Contribution Assessment
-    # CVCP-26 / 28 / 30 / 31 / 32 / 33 / 39
     # ======================================================
 
     for (
@@ -1195,6 +1290,10 @@ def semantic_errors(
             derivative_id
         )
 
+        chain = chains.get(
+            chain_id
+        )
+
         if derivative is None:
             errors.append(
                 f"{assessment_id}: "
@@ -1202,12 +1301,7 @@ def semantic_errors(
                 f"{derivative_id}"
             )
 
-        chain = chains.get(
-            chain_id
-        )
-
         if chain is None:
-
             errors.append(
                 f"{assessment_id}: "
                 f"unknown Trace Chain "
@@ -1411,34 +1505,6 @@ def semantic_errors(
                         f"{evidence['origin_id']}"
                     )
 
-                if (
-                    evidence[
-                        "derivative_id"
-                    ]
-                    != derivative_id
-                ):
-                    errors.append(
-                        f"{assessment_id}: "
-                        "contribution Evidence "
-                        "Assessment "
-                        f"{evidence_ref} "
-                        "Derivative mismatch"
-                    )
-
-                if (
-                    evidence[
-                        "trace_chain_ref"
-                    ]
-                    != chain_id
-                ):
-                    errors.append(
-                        f"{assessment_id}: "
-                        "contribution Evidence "
-                        "Assessment "
-                        f"{evidence_ref} "
-                        "Trace Chain mismatch"
-                    )
-
                 if not close_enough(
                     contribution[
                         "evidence_strength"
@@ -1514,7 +1580,6 @@ def semantic_errors(
                 )
 
             else:
-
                 expected_adjusted = (
                     actual_raw
                 )
@@ -1623,7 +1688,6 @@ def semantic_errors(
 
     # ======================================================
     # Audit
-    # CVCP-34 / 35 / 36
     # ======================================================
 
     for (
@@ -1639,20 +1703,19 @@ def semantic_errors(
             "trace_chain_ref"
         ]
 
-        derivative = derivatives.get(
-            derivative_id
+        chain = chains.get(
+            chain_id
         )
 
-        if derivative is None:
+        if (
+            derivative_id
+            not in derivatives
+        ):
             errors.append(
                 f"{audit_id}: "
                 f"unknown Derivative "
                 f"{derivative_id}"
             )
-
-        chain = chains.get(
-            chain_id
-        )
 
         if chain is None:
 
@@ -1662,95 +1725,24 @@ def semantic_errors(
                 f"{chain_id}"
             )
 
-            chain_trace_refs: set[
-                str
-            ] = set()
-
         else:
-
-            chain_trace_refs = set(
-                chain[
-                    "trace_refs"
-                ]
-            )
-
-            if (
-                chain[
-                    "derivative_id"
-                ]
-                != derivative_id
-            ):
-                errors.append(
-                    f"{audit_id}: "
-                    "Trace Chain "
-                    "Derivative mismatch"
-                )
 
             if not set(
                 audit[
                     "trace_refs"
                 ]
             ).issubset(
-                chain_trace_refs
+                set(
+                    chain[
+                        "trace_refs"
+                    ]
+                )
             ):
                 errors.append(
                     f"{audit_id}: "
                     "Audit references "
                     "Trace outside "
                     "Trace Chain"
-                )
-
-        audit_evidence_refs = set(
-            audit[
-                "evidence_assessment_refs"
-            ]
-        )
-
-        for evidence_ref in (
-            audit_evidence_refs
-        ):
-
-            evidence = (
-                evidence_assessments.get(
-                    evidence_ref
-                )
-            )
-
-            if evidence is None:
-
-                errors.append(
-                    f"{audit_id}: "
-                    "unknown Evidence "
-                    "Assessment "
-                    f"{evidence_ref}"
-                )
-
-                continue
-
-            if (
-                evidence[
-                    "derivative_id"
-                ]
-                != derivative_id
-            ):
-                errors.append(
-                    f"{audit_id}: "
-                    "Evidence Assessment "
-                    f"{evidence_ref} "
-                    "Derivative mismatch"
-                )
-
-            if (
-                evidence[
-                    "trace_chain_ref"
-                ]
-                != chain_id
-            ):
-                errors.append(
-                    f"{audit_id}: "
-                    "Evidence Assessment "
-                    f"{evidence_ref} "
-                    "Trace Chain mismatch"
                 )
 
         contribution_ref = audit[
@@ -1767,7 +1759,6 @@ def semantic_errors(
             contribution_assessment
             is None
         ):
-
             errors.append(
                 f"{audit_id}: "
                 "unknown Contribution "
@@ -1781,48 +1772,6 @@ def semantic_errors(
             ] = {}
 
         else:
-
-            if (
-                contribution_assessment[
-                    "derivative_id"
-                ]
-                != derivative_id
-            ):
-                errors.append(
-                    f"{audit_id}: "
-                    "Contribution Assessment "
-                    "Derivative mismatch"
-                )
-
-            if (
-                contribution_assessment[
-                    "trace_chain_ref"
-                ]
-                != chain_id
-            ):
-                errors.append(
-                    f"{audit_id}: "
-                    "Contribution Assessment "
-                    "Trace Chain mismatch"
-                )
-
-            contribution_evidence_refs = set(
-                contribution_assessment[
-                    "evidence_assessment_refs"
-                ]
-            )
-
-            if (
-                contribution_evidence_refs
-                != audit_evidence_refs
-            ):
-                errors.append(
-                    f"{audit_id}: "
-                    "Audit Evidence Assessment "
-                    "set does not match "
-                    "Contribution Assessment "
-                    "Evidence set"
-                )
 
             expected_weights = {
                 item[
@@ -1844,8 +1793,6 @@ def semantic_errors(
             float,
         ] = {}
 
-        seen_origins: set[str] = set()
-
         for contribution in audit[
             "contributions"
         ]:
@@ -1853,20 +1800,6 @@ def semantic_errors(
             origin_id = contribution[
                 "origin_id"
             ]
-
-            if (
-                origin_id
-                in seen_origins
-            ):
-                errors.append(
-                    f"{audit_id}: "
-                    "duplicate Audit "
-                    f"Origin {origin_id}"
-                )
-
-            seen_origins.add(
-                origin_id
-            )
 
             audit_weights[
                 origin_id
@@ -1884,21 +1817,13 @@ def semantic_errors(
 
             if (
                 expected_weight
-                is None
-            ):
-                errors.append(
-                    f"{audit_id}: "
-                    "Audit contribution "
-                    f"Origin {origin_id} "
-                    "is absent from "
-                    "Contribution Assessment"
+                is not None
+                and not close_enough(
+                    contribution[
+                        "weight"
+                    ],
+                    expected_weight,
                 )
-
-            elif not close_enough(
-                contribution[
-                    "weight"
-                ],
-                expected_weight,
             ):
                 errors.append(
                     f"{audit_id}: "
@@ -1908,60 +1833,6 @@ def semantic_errors(
                     "!= "
                     f"{expected_weight:.12g}"
                 )
-
-            for trace_id in contribution[
-                "evidence_trace_ids"
-            ]:
-
-                if (
-                    trace_id
-                    not in set(
-                        audit[
-                            "trace_refs"
-                        ]
-                    )
-                ):
-                    errors.append(
-                        f"{audit_id}: "
-                        "evidence Trace "
-                        f"{trace_id} "
-                        "is outside Audit "
-                        "trace_refs"
-                    )
-
-                if (
-                    trace_id
-                    not in traces
-                ):
-                    errors.append(
-                        f"{audit_id}: "
-                        "unknown evidence "
-                        f"Trace {trace_id}"
-                    )
-
-        if (
-            audit[
-                "status"
-            ]
-            in {
-                "verified",
-                "provisional",
-            }
-            and expected_weights
-            and set(
-                audit_weights
-            )
-            != set(
-                expected_weights
-            )
-        ):
-            errors.append(
-                f"{audit_id}: "
-                "Audit contribution "
-                "Origin set does not "
-                "match Contribution "
-                "Assessment"
-            )
 
         profile = audit[
             "audit_profile"
@@ -1978,17 +1849,6 @@ def semantic_errors(
                 "verified_threshold"
             ]
         )
-
-        if (
-            provisional_threshold
-            > verified_threshold
-        ):
-            errors.append(
-                f"{audit_id}: "
-                "provisional_threshold "
-                "must not exceed "
-                "verified_threshold"
-            )
 
         expected_confidence = (
             audit_confidence(
@@ -2028,10 +1888,8 @@ def semantic_errors(
             status
             == "verified"
             and confidence
-            < (
-                verified_threshold
-                - EPSILON
-            )
+            < verified_threshold
+            - EPSILON
         ):
             errors.append(
                 f"{audit_id}: "
@@ -2043,17 +1901,12 @@ def semantic_errors(
         elif (
             status
             == "provisional"
-            and (
-                confidence
-                < (
-                    provisional_threshold
-                    - EPSILON
-                )
-                or confidence
-                >= (
-                    verified_threshold
-                    - EPSILON
-                )
+            and not (
+                provisional_threshold
+                - EPSILON
+                <= confidence
+                < verified_threshold
+                - EPSILON
             )
         ):
             errors.append(
@@ -2065,25 +1918,8 @@ def semantic_errors(
                 f"{verified_threshold}"
             )
 
-        elif (
-            status
-            == "rejected"
-            and confidence
-            >= (
-                provisional_threshold
-                - EPSILON
-            )
-        ):
-            errors.append(
-                f"{audit_id}: "
-                "rejected status "
-                "requires confidence "
-                f"< {provisional_threshold}"
-            )
-
     # ======================================================
     # Royalty
-    # CVCP-37 / CVCP-40
     # ======================================================
 
     for (
@@ -2160,25 +1996,6 @@ def semantic_errors(
                 f"{audit['status']!r}"
             )
 
-        contribution_assessment = (
-            contribution_assessments.get(
-                basis[
-                    "contribution_assessment_ref"
-                ]
-            )
-        )
-
-        if (
-            contribution_assessment
-            is None
-        ):
-            errors.append(
-                f"{royalty_id}: "
-                "unknown Royalty basis "
-                "Contribution Assessment "
-                f"{basis['contribution_assessment_ref']}"
-            )
-
         audited_weights = {
             item[
                 "origin_id"
@@ -2194,10 +2011,6 @@ def semantic_errors(
             ]
         }
 
-        allocation_origins: set[
-            str
-        ] = set()
-
         for allocation in royalty[
             "allocations"
         ]:
@@ -2206,55 +2019,14 @@ def semantic_errors(
                 "origin_id"
             ]
 
-            if (
-                origin_id
-                in allocation_origins
-            ):
-                errors.append(
-                    f"{royalty_id}: "
-                    "duplicate Royalty "
-                    f"Origin {origin_id}"
-                )
-
-            allocation_origins.add(
-                origin_id
-            )
-
             audited_weight = (
                 audited_weights.get(
                     origin_id
                 )
             )
 
-            if (
-                audited_weight
-                is None
-            ):
-                errors.append(
-                    f"{royalty_id}: "
-                    "allocation Origin "
-                    f"{origin_id} "
-                    "was not audited"
-                )
-
+            if audited_weight is None:
                 continue
-
-            actual_weight = float(
-                allocation[
-                    "contribution_weight"
-                ]
-            )
-
-            if not close_enough(
-                actual_weight,
-                audited_weight,
-            ):
-                errors.append(
-                    f"{royalty_id}: "
-                    "contribution weight "
-                    "does not match Audit "
-                    f"for {origin_id}"
-                )
 
             expected_amount = (
                 float(
@@ -2262,7 +2034,11 @@ def semantic_errors(
                         "value_generated"
                     ]
                 )
-                * actual_weight
+                * float(
+                    allocation[
+                        "contribution_weight"
+                    ]
+                )
                 * float(
                     allocation[
                         "royalty_rate"
@@ -2270,148 +2046,756 @@ def semantic_errors(
                 )
             )
 
-            actual_amount = float(
+            if not close_enough(
                 allocation[
                     "amount"
-                ]
-            )
-
-            if not close_enough(
+                ],
                 expected_amount,
-                actual_amount,
             ):
                 errors.append(
                     f"{royalty_id}: "
                     "amount mismatch "
-                    f"for {origin_id}: "
-                    f"{actual_amount:.12g} "
-                    "!= "
-                    f"{expected_amount:.12g}"
+                    f"for {origin_id}"
                 )
 
-            origin = origins.get(
-                origin_id
-            )
+    # ======================================================
+    # Settlement Request
+    # CVCP-41〜46
+    # ======================================================
 
-            if origin is not None:
+    idempotency_map: dict[
+        str,
+        list[str],
+    ] = defaultdict(list)
 
-                policy = origin[
-                    "access_policy"
-                ]
+    for (
+        request_id,
+        request,
+    ) in settlement_requests.items():
 
-                if (
-                    policy.get(
-                        "royalty_required"
-                    )
-                    and "royalty_rate"
-                    in policy
-                ):
-
-                    expected_rate = float(
-                        policy[
-                            "royalty_rate"
-                        ]
-                    )
-
-                    actual_rate = float(
-                        allocation[
-                            "royalty_rate"
-                        ]
-                    )
-
-                    if not close_enough(
-                        expected_rate,
-                        actual_rate,
-                    ):
-                        errors.append(
-                            f"{royalty_id}: "
-                            "royalty rate "
-                            "does not match "
-                            "Origin policy "
-                            f"for {origin_id}"
-                        )
-
-        if (
-            audit[
-                "status"
+        idempotency_map[
+            request[
+                "idempotency_key"
             ]
-            in {
-                "verified",
-                "provisional",
-            }
-            and allocation_origins
-            != set(
-                audited_weights
-            )
-        ):
-            errors.append(
-                f"{royalty_id}: "
-                "Royalty allocation "
-                "Origin set does not "
-                "match Audit"
-            )
+        ].append(
+            request_id
+        )
 
-        settlement_status = royalty[
-            "settlement_status"
+        royalty_id = request[
+            "royalty_id"
         ]
 
-        if (
-            audit[
-                "status"
-            ]
-            == "provisional"
-            and settlement_status
-            not in {
-                "provisional",
-                "not_required",
-                "disputed",
-            }
-        ):
+        audit_id = request[
+            "audit_id"
+        ]
+
+        royalty = royalties.get(
+            royalty_id
+        )
+
+        audit = audits.get(
+            audit_id
+        )
+
+        if royalty is None:
+
             errors.append(
-                f"{royalty_id}: "
-                "provisional Audit "
-                "cannot enter finalized "
-                "settlement flow"
+                f"{request_id}: "
+                f"unknown Royalty "
+                f"{royalty_id}"
+            )
+
+        if audit is None:
+
+            errors.append(
+                f"{request_id}: "
+                f"unknown Audit "
+                f"{audit_id}"
             )
 
         if (
-            audit[
-                "status"
-            ]
-            in {
-                "disputed",
-                "rejected",
-            }
-            and settlement_status
-            not in {
-                "not_required",
-                "disputed",
-            }
-        ):
-            errors.append(
-                f"{royalty_id}: "
-                f"{audit['status']} "
-                "Audit cannot enter "
-                "settlement flow"
-            )
-
-        if (
-            settlement_status
-            == "settled"
+            audit is not None
             and audit[
                 "status"
             ]
             != "verified"
         ):
             errors.append(
+                f"{request_id}: "
+                "Settlement Request "
+                "requires verified Audit, "
+                f"got {audit['status']}"
+            )
+
+        if royalty is not None:
+
+            if (
+                royalty[
+                    "audit_id"
+                ]
+                != audit_id
+            ):
+                errors.append(
+                    f"{request_id}: "
+                    "request audit_id "
+                    "does not match "
+                    "Royalty audit_id"
+                )
+
+            if (
+                royalty[
+                    "royalty_basis"
+                ][
+                    "audit_status"
+                ]
+                != "verified"
+            ):
+                errors.append(
+                    f"{request_id}: "
+                    "Settlement Request "
+                    "requires verified "
+                    "Royalty basis"
+                )
+
+            if (
+                unit_key(
+                    request[
+                        "value_unit"
+                    ]
+                )
+                !=
+                unit_key(
+                    royalty[
+                        "value_unit"
+                    ]
+                )
+            ):
+                errors.append(
+                    f"{request_id}: "
+                    "Settlement Request "
+                    "value_unit does not "
+                    "match Royalty"
+                )
+
+            request_amounts = (
+                request_amounts_by_origin(
+                    request
+                )
+            )
+
+            royalty_amounts = (
+                royalty_amounts_by_origin(
+                    royalty
+                )
+            )
+
+            if (
+                set(
+                    request_amounts
+                )
+                !=
+                set(
+                    royalty_amounts
+                )
+            ):
+                errors.append(
+                    f"{request_id}: "
+                    "Settlement Request "
+                    "Origin set does not "
+                    "match Royalty"
+                )
+
+            for origin_id in sorted(
+                set(
+                    request_amounts
+                )
+                |
+                set(
+                    royalty_amounts
+                )
+            ):
+
+                request_amount = (
+                    request_amounts.get(
+                        origin_id
+                    )
+                )
+
+                royalty_amount = (
+                    royalty_amounts.get(
+                        origin_id
+                    )
+                )
+
+                if (
+                    request_amount is None
+                    or royalty_amount is None
+                ):
+                    continue
+
+                if not close_enough(
+                    request_amount,
+                    royalty_amount,
+                ):
+                    errors.append(
+                        f"{request_id}: "
+                        "Settlement Request "
+                        "amount mismatch "
+                        f"for {origin_id}: "
+                        f"{request_amount:.12g} "
+                        "!= "
+                        f"{royalty_amount:.12g}"
+                    )
+
+        if (
+            request[
+                "execution_authority"
+            ]
+            != "external"
+        ):
+            errors.append(
+                f"{request_id}: "
+                "execution_authority "
+                "must be external"
+            )
+
+        if not request[
+            "authorization_refs"
+        ]:
+            errors.append(
+                f"{request_id}: "
+                "authorization_refs "
+                "must not be empty"
+            )
+
+        if (
+            "expires_at"
+            in request
+            and parse_datetime(
+                request[
+                    "expires_at"
+                ]
+            )
+            <= parse_datetime(
+                request[
+                    "requested_at"
+                ]
+            )
+        ):
+            errors.append(
+                f"{request_id}: "
+                "expires_at must be "
+                "after requested_at"
+            )
+
+        allocation_ids: set[
+            str
+        ] = set()
+
+        for allocation in request[
+            "allocations"
+        ]:
+
+            allocation_id = allocation[
+                "allocation_id"
+            ]
+
+            if (
+                allocation_id
+                in allocation_ids
+            ):
+                errors.append(
+                    f"{request_id}: "
+                    "duplicate settlement "
+                    "allocation_id "
+                    f"{allocation_id}"
+                )
+
+            allocation_ids.add(
+                allocation_id
+            )
+
+    for (
+        key,
+        request_ids,
+    ) in idempotency_map.items():
+
+        if len(
+            request_ids
+        ) > 1:
+            errors.append(
+                "duplicate settlement "
+                f"idempotency_key {key}: "
+                f"{sorted(request_ids)}"
+            )
+
+    # ======================================================
+    # Settlement Receipt
+    # CVCP-47〜54 / 58
+    # ======================================================
+
+    receipts_by_request: dict[
+        str,
+        list[dict[str, Any]],
+    ] = defaultdict(list)
+
+    for (
+        receipt_id,
+        receipt,
+    ) in settlement_receipts.items():
+
+        request_id = receipt[
+            "settlement_request_id"
+        ]
+
+        receipts_by_request[
+            request_id
+        ].append(
+            receipt
+        )
+
+        request = settlement_requests.get(
+            request_id
+        )
+
+        if request is None:
+
+            errors.append(
+                f"{receipt_id}: "
+                "unknown Settlement "
+                f"Request {request_id}"
+            )
+
+            continue
+
+        if (
+            receipt[
+                "royalty_id"
+            ]
+            != request[
+                "royalty_id"
+            ]
+        ):
+            errors.append(
+                f"{receipt_id}: "
+                "Receipt royalty_id "
+                "does not match "
+                "Settlement Request"
+            )
+
+        requested_by_id = {
+            allocation[
+                "allocation_id"
+            ]:
+                allocation
+            for allocation
+            in request[
+                "allocations"
+            ]
+        }
+
+        seen_allocation_ids: set[
+            str
+        ] = set()
+
+        for executed in receipt[
+            "executed_allocations"
+        ]:
+
+            allocation_id = executed[
+                "allocation_id"
+            ]
+
+            if (
+                allocation_id
+                in seen_allocation_ids
+            ):
+                errors.append(
+                    f"{receipt_id}: "
+                    "duplicate executed "
+                    "allocation_id "
+                    f"{allocation_id}"
+                )
+
+            seen_allocation_ids.add(
+                allocation_id
+            )
+
+            requested = (
+                requested_by_id.get(
+                    allocation_id
+                )
+            )
+
+            if requested is None:
+
+                errors.append(
+                    f"{receipt_id}: "
+                    "extra executed "
+                    "allocation "
+                    f"{allocation_id} "
+                    "not present in "
+                    "Settlement Request"
+                )
+
+                continue
+
+            if (
+                executed[
+                    "origin_id"
+                ]
+                != requested[
+                    "origin_id"
+                ]
+            ):
+                errors.append(
+                    f"{receipt_id}: "
+                    f"allocation "
+                    f"{allocation_id} "
+                    "Origin mismatch"
+                )
+
+            if (
+                executed[
+                    "beneficiary_id"
+                ]
+                != requested[
+                    "beneficiary_id"
+                ]
+            ):
+                errors.append(
+                    f"{receipt_id}: "
+                    f"allocation "
+                    f"{allocation_id} "
+                    "beneficiary mismatch"
+                )
+
+            if not close_enough(
+                executed[
+                    "requested_amount"
+                ],
+                requested[
+                    "amount"
+                ],
+            ):
+                errors.append(
+                    f"{receipt_id}: "
+                    f"allocation "
+                    f"{allocation_id} "
+                    "requested_amount "
+                    "mismatch"
+                )
+
+            if (
+                receipt[
+                    "execution_status"
+                ]
+                == "settled"
+            ):
+
+                if (
+                    executed[
+                        "status"
+                    ]
+                    != "settled"
+                ):
+                    errors.append(
+                        f"{receipt_id}: "
+                        "settled Receipt "
+                        "requires settled "
+                        "allocation "
+                        f"{allocation_id}"
+                    )
+
+                if not close_enough(
+                    executed[
+                        "executed_amount"
+                    ],
+                    requested[
+                        "amount"
+                    ],
+                ):
+                    errors.append(
+                        f"{receipt_id}: "
+                        "executed amount "
+                        "mismatch for "
+                        f"{allocation_id}: "
+                        f"{float(executed['executed_amount']):.12g} "
+                        "!= "
+                        f"{float(requested['amount']):.12g}"
+                    )
+
+        request_ids = set(
+            requested_by_id
+        )
+
+        if (
+            receipt[
+                "execution_status"
+            ]
+            == "settled"
+            and seen_allocation_ids
+            != request_ids
+        ):
+
+            missing = (
+                request_ids
+                - seen_allocation_ids
+            )
+
+            extra = (
+                seen_allocation_ids
+                - request_ids
+            )
+
+            if missing:
+                errors.append(
+                    f"{receipt_id}: "
+                    "settled Receipt "
+                    "missing allocation(s): "
+                    f"{sorted(missing)}"
+                )
+
+            if extra:
+                errors.append(
+                    f"{receipt_id}: "
+                    "settled Receipt has "
+                    "extra allocation(s): "
+                    f"{sorted(extra)}"
+                )
+
+        if (
+            receipt[
+                "execution_status"
+            ]
+            == "settled"
+            and not receipt.get(
+                "external_transaction_ref"
+            )
+        ):
+            errors.append(
+                f"{receipt_id}: "
+                "settled Receipt "
+                "requires "
+                "external_transaction_ref"
+            )
+
+        if (
+            "supersedes_ref"
+            in receipt
+        ):
+
+            superseded_id = receipt[
+                "supersedes_ref"
+            ]
+
+            superseded = (
+                settlement_receipts.get(
+                    superseded_id
+                )
+            )
+
+            if superseded is None:
+
+                errors.append(
+                    f"{receipt_id}: "
+                    "supersedes unknown "
+                    "Settlement Receipt "
+                    f"{superseded_id}"
+                )
+
+            elif (
+                superseded[
+                    "settlement_request_id"
+                ]
+                != request_id
+            ):
+                errors.append(
+                    f"{receipt_id}: "
+                    "superseded Receipt "
+                    "belongs to another "
+                    "Settlement Request"
+                )
+
+    for (
+        request_id,
+        request_receipts,
+    ) in receipts_by_request.items():
+
+        settled_receipts = [
+            receipt
+            for receipt
+            in request_receipts
+            if (
+                receipt[
+                    "execution_status"
+                ]
+                == "settled"
+            )
+        ]
+
+        if (
+            len(
+                settled_receipts
+            )
+            > 1
+        ):
+            errors.append(
+                f"{request_id}: "
+                "multiple settled "
+                "Settlement Receipts: "
+                f"{[
+                    item['settlement_receipt_id']
+                    for item
+                    in settled_receipts
+                ]}"
+            )
+
+    # ======================================================
+    # Royalty ↔ Settlement
+    # ======================================================
+
+    for (
+        royalty_id,
+        royalty,
+    ) in royalties.items():
+
+        request_ref = royalty.get(
+            "settlement_request_ref"
+        )
+
+        receipt_refs = royalty.get(
+            "settlement_receipt_refs",
+            [],
+        )
+
+        request = (
+            settlement_requests.get(
+                request_ref
+            )
+            if isinstance(
+                request_ref,
+                str,
+            )
+            else None
+        )
+
+        if (
+            request_ref is not None
+            and request is None
+        ):
+            errors.append(
                 f"{royalty_id}: "
-                "final settlement "
-                "requires verified Audit"
+                "unknown "
+                "settlement_request_ref "
+                f"{request_ref}"
+            )
+
+        referenced_receipts: list[
+            dict[str, Any]
+        ] = []
+
+        for receipt_ref in (
+            receipt_refs
+        ):
+
+            receipt = (
+                settlement_receipts.get(
+                    receipt_ref
+                )
+            )
+
+            if receipt is None:
+
+                errors.append(
+                    f"{royalty_id}: "
+                    "unknown Settlement "
+                    f"Receipt {receipt_ref}"
+                )
+
+                continue
+
+            referenced_receipts.append(
+                receipt
+            )
+
+            if (
+                receipt[
+                    "royalty_id"
+                ]
+                != royalty_id
+            ):
+                errors.append(
+                    f"{royalty_id}: "
+                    "Settlement Receipt "
+                    f"{receipt_ref} "
+                    "belongs to another "
+                    "Royalty"
+                )
+
+        status = royalty[
+            "settlement_status"
+        ]
+
+        if (
+            status
+            == "processing"
+            and not any(
+                receipt[
+                    "execution_status"
+                ]
+                == "processing"
+                for receipt
+                in referenced_receipts
+            )
+        ):
+            errors.append(
+                f"{royalty_id}: "
+                "processing Royalty "
+                "requires processing "
+                "Settlement Receipt"
+            )
+
+        if (
+            status
+            == "settled"
+            and not any(
+                receipt[
+                    "execution_status"
+                ]
+                == "settled"
+                for receipt
+                in referenced_receipts
+            )
+        ):
+            errors.append(
+                f"{royalty_id}: "
+                "settled Royalty "
+                "requires settled "
+                "Settlement Receipt"
+            )
+
+        if (
+            status
+            == "failed"
+            and not any(
+                receipt[
+                    "execution_status"
+                ]
+                == "failed"
+                for receipt
+                in referenced_receipts
+            )
+        ):
+            errors.append(
+                f"{royalty_id}: "
+                "failed Royalty "
+                "requires failed "
+                "Settlement Receipt"
             )
 
     # ======================================================
     # State Transition
-    # CVCP-21 / 22 / 23 / 25
     # ======================================================
 
     for (
@@ -2467,154 +2851,97 @@ def semantic_errors(
             "next_status"
         ]
 
-        required_refs: set[
-            str
-        ] = set()
-
         if (
             next_status
-            == "derivative_created"
+            == "settlement_pending"
         ):
 
-            ref = cycle.get(
-                "derivative_ref"
+            request_ref = cycle.get(
+                "settlement_request_ref"
             )
 
-            if isinstance(
-                ref,
-                str,
-            ):
-                required_refs.add(
-                    ref
-                )
-
-        elif (
-            next_status
-            in {
-                "trace_recorded",
-                "audit_pending",
-            }
-        ):
-
-            ref = cycle.get(
-                "trace_chain_ref"
-            )
-
-            if isinstance(
-                ref,
-                str,
-            ):
-                required_refs.add(
-                    ref
-                )
-
-        elif (
-            next_status
-            in {
-                "audit_provisional",
-                "audit_verified",
-            }
-        ):
-
-            ref = cycle.get(
-                "audit_ref"
-            )
-
-            if isinstance(
-                ref,
-                str,
-            ):
-                required_refs.add(
-                    ref
-                )
-
-        elif (
-            next_status
-            in {
-                "royalty_calculated",
-                "settlement_pending",
-            }
-        ):
-
-            ref = cycle.get(
-                "royalty_ref"
-            )
-
-            if isinstance(
-                ref,
-                str,
-            ):
-                required_refs.add(
-                    ref
-                )
-
-        elif (
-            next_status
-            == "settled"
-        ):
-
-            royalty_id = cycle.get(
-                "royalty_ref"
-            )
-
-            royalty = (
-                royalties.get(
-                    royalty_id
-                )
-                if isinstance(
-                    royalty_id,
+            if (
+                isinstance(
+                    request_ref,
                     str,
                 )
-                else None
-            )
+                and request_ref
+                not in evidence_refs
+            ):
+                errors.append(
+                    f"{transition_id}: "
+                    "settlement_pending "
+                    "transition must cite "
+                    "Settlement Request"
+                )
 
-            if royalty is None:
+        if next_status in {
+            "settlement_processing",
+            "settlement_failed",
+            "settled",
+        }:
+
+            expected_status = {
+                "settlement_processing":
+                    "processing",
+                "settlement_failed":
+                    "failed",
+                "settled":
+                    "settled",
+            }[
+                next_status
+            ]
+
+            matching = []
+
+            for receipt_ref in cycle.get(
+                "settlement_receipt_refs",
+                [],
+            ):
+
+                receipt = (
+                    settlement_receipts.get(
+                        receipt_ref
+                    )
+                )
+
+                if (
+                    receipt is not None
+                    and receipt[
+                        "execution_status"
+                    ]
+                    == expected_status
+                ):
+                    matching.append(
+                        receipt_ref
+                    )
+
+            if not matching:
 
                 errors.append(
                     f"{transition_id}: "
-                    "settled transition "
-                    "requires "
-                    "Royalty Record"
+                    f"{next_status} "
+                    "transition requires "
+                    f"{expected_status} "
+                    "Settlement Receipt"
                 )
 
-            else:
-
-                settlement_ref = (
-                    royalty.get(
-                        "settlement_ref"
-                    )
+            elif not (
+                set(
+                    matching
                 )
-
-                if not settlement_ref:
-
-                    errors.append(
-                        f"{transition_id}: "
-                        "settled transition "
-                        "requires "
-                        "settlement_ref"
-                    )
-
-                else:
-                    required_refs.add(
-                        settlement_ref
-                    )
-
-        missing_evidence = (
-            required_refs
-            - evidence_refs
-        )
-
-        if missing_evidence:
-            errors.append(
-                f"{transition_id}: "
-                "required transition "
-                "evidence missing: "
-                f"{sorted(missing_evidence)}"
-            )
+                & evidence_refs
+            ):
+                errors.append(
+                    f"{transition_id}: "
+                    "transition evidence "
+                    "must cite a "
+                    f"{expected_status} "
+                    "Settlement Receipt"
+                )
 
     # ======================================================
     # Value Cycle
-    # CVCP-24 + v0.3 assessment chain
     # ======================================================
 
     for (
@@ -2622,21 +2949,18 @@ def semantic_errors(
         cycle,
     ) in cycles.items():
 
-        created_at = parse_datetime(
-            cycle[
-                "created_at"
-            ]
-        )
-
-        updated_at = parse_datetime(
-            cycle[
-                "updated_at"
-            ]
-        )
-
         if (
-            updated_at
-            < created_at
+            parse_datetime(
+                cycle[
+                    "updated_at"
+                ]
+            )
+            <
+            parse_datetime(
+                cycle[
+                    "created_at"
+                ]
+            )
         ):
             errors.append(
                 f"{cycle_id}: "
@@ -2644,383 +2968,62 @@ def semantic_errors(
                 "created_at"
             )
 
-        cycle_origins = set(
-            cycle[
-                "origin_refs"
-            ]
+        request_id = cycle.get(
+            "settlement_request_ref"
         )
 
-        for origin_id in (
-            cycle_origins
-        ):
-            if (
-                origin_id
-                not in origins
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    f"unknown Origin "
-                    f"{origin_id}"
-                )
-
-        derivative_id = cycle.get(
-            "derivative_ref"
-        )
-
-        derivative = (
-            derivatives.get(
-                derivative_id
+        request = (
+            settlement_requests.get(
+                request_id
             )
             if isinstance(
-                derivative_id,
+                request_id,
                 str,
             )
             else None
         )
 
-        if (
-            derivative_id is not None
-            and derivative is None
-        ):
-            errors.append(
-                f"{cycle_id}: "
-                "unknown Derivative "
-                f"{derivative_id}"
-            )
+        cycle_receipts: list[
+            dict[str, Any]
+        ] = []
 
-        if (
-            derivative is not None
-            and cycle_origins
-            != set(
-                derivative[
-                    "origin_refs"
-                ]
-            )
-        ):
-            errors.append(
-                f"{cycle_id}: "
-                "Origin set does not "
-                "match Derivative "
-                "Origin set"
-            )
-
-        chain_id = cycle.get(
-            "trace_chain_ref"
-        )
-
-        chain = (
-            chains.get(
-                chain_id
-            )
-            if isinstance(
-                chain_id,
-                str,
-            )
-            else None
-        )
-
-        if (
-            chain_id is not None
-            and chain is None
-        ):
-            errors.append(
-                f"{cycle_id}: "
-                "unknown Trace Chain "
-                f"{chain_id}"
-            )
-
-        if chain is not None:
-
-            if (
-                derivative_id is not None
-                and chain[
-                    "derivative_id"
-                ]
-                != derivative_id
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Trace Chain "
-                    "Derivative mismatch"
-                )
-
-            if (
-                set(
-                    cycle.get(
-                        "trace_refs",
-                        [],
-                    )
-                )
-                != set(
-                    chain[
-                        "trace_refs"
-                    ]
-                )
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "cycle Trace set "
-                    "does not equal "
-                    "Trace Chain set"
-                )
-
-        cycle_evidence_refs = set(
-            cycle.get(
-                "evidence_assessment_refs",
-                [],
-            )
-        )
-
-        for evidence_ref in (
-            cycle_evidence_refs
+        for receipt_ref in cycle.get(
+            "settlement_receipt_refs",
+            [],
         ):
 
-            evidence = (
-                evidence_assessments.get(
-                    evidence_ref
+            receipt = (
+                settlement_receipts.get(
+                    receipt_ref
                 )
             )
 
-            if evidence is None:
+            if receipt is None:
 
                 errors.append(
                     f"{cycle_id}: "
-                    "unknown Evidence "
-                    "Assessment "
-                    f"{evidence_ref}"
+                    "unknown Settlement "
+                    f"Receipt {receipt_ref}"
                 )
 
                 continue
 
+            cycle_receipts.append(
+                receipt
+            )
+
             if (
-                derivative_id is not None
-                and evidence[
-                    "derivative_id"
+                request_id is not None
+                and receipt[
+                    "settlement_request_id"
                 ]
-                != derivative_id
+                != request_id
             ):
                 errors.append(
                     f"{cycle_id}: "
-                    "Evidence Assessment "
-                    f"{evidence_ref} "
-                    "Derivative mismatch"
-                )
-
-            if (
-                chain_id is not None
-                and evidence[
-                    "trace_chain_ref"
-                ]
-                != chain_id
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Evidence Assessment "
-                    f"{evidence_ref} "
-                    "Trace Chain mismatch"
-                )
-
-        contribution_ref = cycle.get(
-            "contribution_assessment_ref"
-        )
-
-        contribution_assessment = (
-            contribution_assessments.get(
-                contribution_ref
-            )
-            if isinstance(
-                contribution_ref,
-                str,
-            )
-            else None
-        )
-
-        if (
-            contribution_ref is not None
-            and contribution_assessment
-            is None
-        ):
-            errors.append(
-                f"{cycle_id}: "
-                "unknown Contribution "
-                "Assessment "
-                f"{contribution_ref}"
-            )
-
-        if (
-            contribution_assessment
-            is not None
-        ):
-
-            if (
-                derivative_id is not None
-                and contribution_assessment[
-                    "derivative_id"
-                ]
-                != derivative_id
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Contribution "
-                    "Assessment "
-                    "Derivative mismatch"
-                )
-
-            if (
-                chain_id is not None
-                and contribution_assessment[
-                    "trace_chain_ref"
-                ]
-                != chain_id
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Contribution "
-                    "Assessment "
-                    "Trace Chain mismatch"
-                )
-
-            if (
-                cycle_evidence_refs
-                != set(
-                    contribution_assessment[
-                        "evidence_assessment_refs"
-                    ]
-                )
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Evidence Assessment "
-                    "set does not match "
-                    "Contribution "
-                    "Assessment Evidence set"
-                )
-
-        audit_id = cycle.get(
-            "audit_ref"
-        )
-
-        audit = (
-            audits.get(
-                audit_id
-            )
-            if isinstance(
-                audit_id,
-                str,
-            )
-            else None
-        )
-
-        if (
-            audit_id is not None
-            and audit is None
-        ):
-            errors.append(
-                f"{cycle_id}: "
-                f"unknown Audit "
-                f"{audit_id}"
-            )
-
-        if audit is not None:
-
-            if (
-                derivative_id is not None
-                and audit[
-                    "derivative_id"
-                ]
-                != derivative_id
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Audit Derivative "
-                    "mismatch"
-                )
-
-            if (
-                contribution_ref
-                is not None
-                and audit[
-                    "contribution_assessment_ref"
-                ]
-                != contribution_ref
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Audit Contribution "
-                    "Assessment mismatch"
-                )
-
-            if (
-                cycle_evidence_refs
-                != set(
-                    audit[
-                        "evidence_assessment_refs"
-                    ]
-                )
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Audit Evidence "
-                    "Assessment set "
-                    "mismatch"
-                )
-
-        royalty_id = cycle.get(
-            "royalty_ref"
-        )
-
-        royalty = (
-            royalties.get(
-                royalty_id
-            )
-            if isinstance(
-                royalty_id,
-                str,
-            )
-            else None
-        )
-
-        if (
-            royalty_id is not None
-            and royalty is None
-        ):
-            errors.append(
-                f"{cycle_id}: "
-                "unknown Royalty "
-                f"{royalty_id}"
-            )
-
-        if royalty is not None:
-
-            if (
-                audit_id is not None
-                and royalty[
-                    "audit_id"
-                ]
-                != audit_id
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Royalty does not "
-                    "derive from "
-                    "cycle Audit"
-                )
-
-            if (
-                contribution_ref
-                is not None
-                and royalty[
-                    "royalty_basis"
-                ][
-                    "contribution_assessment_ref"
-                ]
-                != contribution_ref
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "Royalty Contribution "
-                    "Assessment basis "
-                    "mismatch"
+                    "Settlement Receipt "
+                    f"{receipt_ref} "
+                    "Request mismatch"
                 )
 
         transition_sequence: list[
@@ -3041,25 +3044,11 @@ def semantic_errors(
                 errors.append(
                     f"{cycle_id}: "
                     "unknown State "
-                    "Transition "
+                    f"Transition "
                     f"{transition_id}"
                 )
 
                 continue
-
-            if (
-                transition[
-                    "cycle_id"
-                ]
-                != cycle_id
-            ):
-                errors.append(
-                    f"{cycle_id}: "
-                    "State Transition "
-                    f"{transition_id} "
-                    "belongs to another "
-                    "Value Cycle"
-                )
 
             transition_sequence.append(
                 transition
@@ -3139,76 +3128,76 @@ def semantic_errors(
             "cycle_status"
         ]
 
-        if (
-            status
-            == "audit_provisional"
-            and audit is not None
-            and audit[
-                "status"
-            ]
-            != "provisional"
-        ):
-            errors.append(
-                f"{cycle_id}: "
-                "audit_provisional cycle "
-                "requires provisional "
-                "Audit"
-            )
-
         if status in {
-            "audit_verified",
-            "royalty_calculated",
             "settlement_pending",
+            "settlement_processing",
+            "settlement_failed",
             "settled",
         }:
 
-            if (
-                audit is not None
-                and audit[
-                    "status"
-                ]
-                != "verified"
-            ):
+            if request is None:
                 errors.append(
                     f"{cycle_id}: "
-                    "cycle status "
-                    f"{status!r} "
-                    "requires verified "
-                    "Audit"
+                    f"{status} cycle "
+                    "requires Settlement "
+                    "Request"
                 )
 
         if (
             status
-            == "settlement_pending"
-            and royalty is not None
-            and royalty[
-                "settlement_status"
-            ]
-            not in {
-                "pending",
-                "processing",
-            }
+            == "settlement_processing"
+            and not any(
+                receipt[
+                    "execution_status"
+                ]
+                == "processing"
+                for receipt
+                in cycle_receipts
+            )
         ):
             errors.append(
                 f"{cycle_id}: "
-                "settlement_pending "
-                "cycle requires pending "
-                "or processing Royalty"
+                "settlement_processing "
+                "cycle requires "
+                "processing Receipt"
+            )
+
+        if (
+            status
+            == "settlement_failed"
+            and not any(
+                receipt[
+                    "execution_status"
+                ]
+                == "failed"
+                for receipt
+                in cycle_receipts
+            )
+        ):
+            errors.append(
+                f"{cycle_id}: "
+                "settlement_failed "
+                "cycle requires "
+                "failed Receipt"
             )
 
         if (
             status
             == "settled"
-            and royalty is not None
-            and royalty[
-                "settlement_status"
-            ]
-            != "settled"
+            and not any(
+                receipt[
+                    "execution_status"
+                ]
+                == "settled"
+                for receipt
+                in cycle_receipts
+            )
         ):
             errors.append(
                 f"{cycle_id}: "
-                "settled cycle requires "
-                "settled Royalty"
+                "settled cycle "
+                "requires settled "
+                "Receipt"
             )
 
     return errors
@@ -3228,7 +3217,7 @@ def main() -> int:
 
     print(
         "=== Civilization Value Cycle "
-        "Protocol v0.3 Validation ==="
+        "Protocol v0.4 Validation ==="
     )
 
     try:
@@ -3294,6 +3283,7 @@ def main() -> int:
         )
 
         try:
+
             document = load_document(
                 path
             )
@@ -3317,19 +3307,19 @@ def main() -> int:
 
         for record in records:
 
-            errors = schema_errors(
+            errs = schema_errors(
                 record,
                 validators,
             )
 
-            if errors:
+            if errs:
 
                 print(
                     "[schema-error]"
                 )
 
                 print_errors(
-                    errors
+                    errs
                 )
 
                 file_failed = True
@@ -3343,14 +3333,12 @@ def main() -> int:
             continue
 
         print(
-            "[schema-ok]"
+            "[schema-ok]\n"
         )
 
         pass_records.extend(
             records
         )
-
-        print()
 
     pass_semantic = (
         semantic_errors(
@@ -3451,18 +3439,18 @@ def main() -> int:
             + records
         )
 
-        errors = semantic_errors(
+        errs = semantic_errors(
             scenario_records
         )
 
-        if errors:
+        if errs:
 
             print(
                 "[expected-semantic-failure]"
             )
 
             print_errors(
-                errors
+                errs
             )
 
             print()
@@ -3520,5 +3508,3 @@ if __name__ == "__main__":
     sys.exit(
         main()
     )
-  
-
