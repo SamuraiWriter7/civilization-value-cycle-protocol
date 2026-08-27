@@ -2,7 +2,7 @@ fixture_type: semantic_scenario
 name: value-cycle-status-mismatch
 
 records:
-  - protocol_version: "0.3"
+  - protocol_version: "0.4"
     record_type: state_transition_record
 
     transition_id: STID:cycle-status/20260824T012110Z/st903
