@@ -1,4 +1,4 @@
-protocol_version: "0.3"
+protocol_version: "0.4"
 record_type: royalty_record
 
 royalty_id: RID:royalty-engine/20260824T020700Z/r900
