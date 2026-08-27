@@ -1,4 +1,4 @@
-protocol_version: "0.3"
+protocol_version: "0.4"
 record_type: state_transition_record
 
 transition_id: STID:cycle-main/20260824T011800Z/st900
