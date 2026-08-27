@@ -1,0 +1,22 @@
+protocol_version: "0.4"
+record_type: state_transition_record
+
+transition_id: STID:cycle-main/20260826T020210Z/st008
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+previous_status: settlement_processing
+next_status: settled
+
+evidence_refs:
+  - SRCID:external-executor/20260826T020200Z/src002
+  - transaction:external-executor:000001
+
+transitioned_at: "2026-08-26T02:02:10Z"
+
+actor_id: cycle-controller
+
+reason: External Settlement Receipt confirms complete execution of all requested allocations.
+
+transition_hash:
+  algorithm: sha256
+  value: "8888888888888888888888888888888888888888888888888888888888888888"
