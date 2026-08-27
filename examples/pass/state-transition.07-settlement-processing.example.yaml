@@ -1,0 +1,22 @@
+protocol_version: "0.4"
+record_type: state_transition_record
+
+transition_id: STID:cycle-main/20260826T020110Z/st007
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+previous_status: settlement_pending
+next_status: settlement_processing
+
+evidence_refs:
+  - SRQID:settlement-gateway/20260826T020000Z/srq001
+  - SRCID:external-executor/20260826T020100Z/src001
+
+transitioned_at: "2026-08-26T02:01:10Z"
+
+actor_id: cycle-controller
+
+reason: External Settlement Executor accepted the request and reported processing status.
+
+transition_hash:
+  algorithm: sha256
+  value: "7777777777777777777777777777777777777777777777777777777777777777"
