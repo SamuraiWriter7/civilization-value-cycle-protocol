@@ -1,0 +1,41 @@
+protocol_version: "0.4"
+record_type: settlement_receipt_record
+
+settlement_receipt_id: SRCID:external-executor/20260827T042000Z/src953
+
+settlement_request_id: SRQID:settlement-gateway/20260826T020000Z/srq001
+
+royalty_id: RID:royalty-engine/20260824T010900Z/r001
+
+executor_id: external-executor
+
+execution_status: settled
+
+executed_allocations:
+  - allocation_id: allocation:001
+    origin_id: OID:book/shidenkai-ai/civilization-os/v1
+    beneficiary_id: beneficiary:creator-shidenkai-ai
+    requested_amount: 10.0
+    executed_amount: 10.0
+    status: settled
+    external_transfer_ref: transfer:external-executor:953-a
+
+  - allocation_id: allocation:extra-953
+    origin_id: OID:book/shidenkai-ai/civilization-os/v1
+    beneficiary_id: beneficiary:unknown
+    requested_amount: 1.0
+    executed_amount: 1.0
+    status: settled
+    external_transfer_ref: transfer:external-executor:953-b
+
+external_transaction_ref: transaction:external-executor:953
+
+executed_at: "2026-08-27T04:20:00Z"
+
+receipt_hash:
+  algorithm: sha256
+  value: "9539539539539539539539539539539539539539539539539539539539539539"
+
+evidence_refs:
+  - SRQID:settlement-gateway/20260826T020000Z/srq001
+  - transaction:external-executor:953
