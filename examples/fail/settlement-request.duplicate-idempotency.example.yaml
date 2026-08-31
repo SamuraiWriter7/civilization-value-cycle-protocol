@@ -1,0 +1,75 @@
+fixture_type: semantic_scenario
+name: duplicate-settlement-idempotency-key
+
+records:
+  - protocol_version: "0.4"
+    record_type: settlement_request_record
+
+    settlement_request_id: SRQID:settlement-gateway/20260827T034000Z/srq944
+
+    royalty_id: RID:royalty-engine/20260824T010900Z/r001
+    audit_id: AID:auditor-main/20260824T010800Z/a001
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - allocation_id: allocation:944
+        origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        beneficiary_id: beneficiary:creator-shidenkai-ai
+        destination_ref: destination:external-account:creator-001
+        amount: 10.0
+
+    requested_by: settlement-gateway
+
+    authorization_refs:
+      - auth:royalty-settlement:20260827:944
+
+    execution_authority: external
+
+    idempotency_key: cvcp:duplicate-test:r001:v1
+
+    request_status: requested
+
+    requested_at: "2026-08-27T03:40:00Z"
+
+    request_hash:
+      algorithm: sha256
+      value: "9449449449449449449449449449449449449449449449449449449449449449"
+
+  - protocol_version: "0.4"
+    record_type: settlement_request_record
+
+    settlement_request_id: SRQID:settlement-gateway/20260827T034100Z/srq945
+
+    royalty_id: RID:royalty-engine/20260824T010900Z/r001
+    audit_id: AID:auditor-main/20260824T010800Z/a001
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - allocation_id: allocation:945
+        origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        beneficiary_id: beneficiary:creator-shidenkai-ai
+        destination_ref: destination:external-account:creator-001
+        amount: 10.0
+
+    requested_by: settlement-gateway
+
+    authorization_refs:
+      - auth:royalty-settlement:20260827:945
+
+    execution_authority: external
+
+    idempotency_key: cvcp:duplicate-test:r001:v1
+
+    request_status: accepted
+
+    requested_at: "2026-08-27T03:41:00Z"
+
+    request_hash:
+      algorithm: sha256
+      value: "9459459459459459459459459459459459459459459459459459459459459459"
