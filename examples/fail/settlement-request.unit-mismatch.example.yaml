@@ -1,0 +1,35 @@
+protocol_version: "0.4"
+record_type: settlement_request_record
+
+settlement_request_id: SRQID:settlement-gateway/20260827T033000Z/srq943
+
+royalty_id: RID:royalty-engine/20260824T010900Z/r001
+audit_id: AID:auditor-main/20260824T010800Z/a001
+
+value_unit:
+  type: fiat
+  code: EUR
+
+allocations:
+  - allocation_id: allocation:943
+    origin_id: OID:book/shidenkai-ai/civilization-os/v1
+    beneficiary_id: beneficiary:creator-shidenkai-ai
+    destination_ref: destination:external-account:creator-001
+    amount: 10.0
+
+requested_by: settlement-gateway
+
+authorization_refs:
+  - auth:royalty-settlement:20260827:943
+
+execution_authority: external
+
+idempotency_key: cvcp:fail:unit-mismatch:r001:v1
+
+request_status: requested
+
+requested_at: "2026-08-27T03:30:00Z"
+
+request_hash:
+  algorithm: sha256
+  value: "9439439439439439439439439439439439439439439439439439439439439439"
