@@ -1,0 +1,116 @@
+fixture_type: semantic_scenario
+name: settlement-request-from-provisional-audit
+
+records:
+  - protocol_version: "0.4"
+    record_type: audit_record
+
+    audit_id: AID:auditor-main/20260827T030000Z/a940
+    derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
+    trace_chain_ref: TCID:agent-alpha/20260824T010500Z/tc001
+
+    trace_refs:
+      - TID:agent-alpha/20260824T010100Z/t001
+      - TID:agent-alpha/20260824T010200Z/t002
+      - TID:agent-alpha/20260824T010300Z/t003
+      - TID:agent-alpha/20260824T010400Z/t004
+
+    evidence_assessment_refs:
+      - EAID:assessor-main/20260824T010600Z/ea001
+
+    contribution_assessment_ref: CAID:assessor-main/20260824T010700Z/ca001
+
+    auditor_id: auditor-main
+    status: provisional
+
+    audit_profile:
+      profile_id: cvcp-standard-audit-v1
+      verified_threshold: 0.80
+      provisional_threshold: 0.50
+
+    confidence: 0.665
+
+    confidence_components:
+      evidence_quality: 0.70
+      trace_completeness: 0.80
+      contribution_stability: 0.60
+      methodology_reliability: 0.70
+      conflict_penalty: 0.05
+
+    contributions:
+      - origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        weight: 1.0
+        evidence_trace_ids:
+          - TID:agent-alpha/20260824T010100Z/t001
+          - TID:agent-alpha/20260824T010400Z/t004
+
+    evidence_refs:
+      - EAID:assessor-main/20260824T010600Z/ea001
+      - CAID:assessor-main/20260824T010700Z/ca001
+
+    reasoning_summary: Attribution remains provisional and is not authorized for final settlement.
+
+    audited_at: "2026-08-27T03:00:00Z"
+
+  - protocol_version: "0.4"
+    record_type: royalty_record
+
+    royalty_id: RID:royalty-engine/20260827T030100Z/r940
+    audit_id: AID:auditor-main/20260827T030000Z/a940
+
+    royalty_basis:
+      contribution_assessment_ref: CAID:assessor-main/20260824T010700Z/ca001
+      audit_confidence: 0.665
+      audit_status: provisional
+
+    value_generated: 100.0
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        contribution_weight: 1.0
+        royalty_rate: 0.10
+        amount: 10.0
+
+    settlement_status: provisional
+
+    created_at: "2026-08-27T03:01:00Z"
+
+  - protocol_version: "0.4"
+    record_type: settlement_request_record
+
+    settlement_request_id: SRQID:settlement-gateway/20260827T030200Z/srq940
+
+    royalty_id: RID:royalty-engine/20260827T030100Z/r940
+    audit_id: AID:auditor-main/20260827T030000Z/a940
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - allocation_id: allocation:940
+        origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        beneficiary_id: beneficiary:creator-shidenkai-ai
+        destination_ref: destination:external-account:creator-001
+        amount: 10.0
+
+    requested_by: settlement-gateway
+
+    authorization_refs:
+      - auth:royalty-settlement:20260827:940
+
+    execution_authority: external
+
+    idempotency_key: cvcp:fail:provisional:r940:v1
+
+    request_status: requested
+
+    requested_at: "2026-08-27T03:02:00Z"
+
+    request_hash:
+      algorithm: sha256
+      value: "9409409409409409409409409409409409409409409409409409409409409409"
