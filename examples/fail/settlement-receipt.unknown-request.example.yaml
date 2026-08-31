@@ -1,0 +1,29 @@
+protocol_version: "0.4"
+record_type: settlement_receipt_record
+
+settlement_receipt_id: SRCID:external-executor/20260827T035000Z/src950
+
+settlement_request_id: SRQID:settlement-gateway/20260827T000000Z/missing
+
+royalty_id: RID:royalty-engine/20260824T010900Z/r001
+
+executor_id: external-executor
+
+execution_status: processing
+
+executed_allocations:
+  - allocation_id: allocation:950
+    origin_id: OID:book/shidenkai-ai/civilization-os/v1
+    beneficiary_id: beneficiary:creator-shidenkai-ai
+    requested_amount: 10.0
+    executed_amount: 0.0
+    status: processing
+
+executed_at: "2026-08-27T03:50:00Z"
+
+receipt_hash:
+  algorithm: sha256
+  value: "9509509509509509509509509509509509509509509509509509509509509509"
+
+evidence_refs:
+  - executor-event:processing:950
