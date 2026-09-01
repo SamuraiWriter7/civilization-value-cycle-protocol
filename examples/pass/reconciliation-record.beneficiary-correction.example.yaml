@@ -1,0 +1,69 @@
+protocol_version: "0.5"
+record_type: reconciliation_record
+
+reconciliation_id: RCID:reconciliation-service/20260901T020600Z/rc001
+
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+dispute_refs:
+  - DPID:rights-holder/20260901T020300Z/dp001
+
+cause_refs:
+  - SRCID:external-executor/20260826T020200Z/src002
+
+affected_record_refs:
+  - SRQID:settlement-gateway/20260826T020000Z/srq001
+  - SRCID:external-executor/20260826T020200Z/src002
+
+resolution_type: beneficiary_correction
+
+resolution_actions:
+  - action_type: reverse
+
+    target_ref: SRCID:external-executor/20260826T020200Z/src002
+
+    result_ref: SRCID:external-executor/20260901T020400Z/src003
+
+    notes: Reverse the original externally settled transfer without deleting its Receipt.
+
+  - action_type: reissue
+
+    target_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+
+    result_ref: SRQID:settlement-gateway/20260901T020430Z/srq002
+
+    notes: Reissue the Settlement Request with the corrected beneficiary destination.
+
+  - action_type: retry
+
+    target_ref: SRQID:settlement-gateway/20260901T020430Z/srq002
+
+    result_ref: SRCID:external-executor/20260901T020500Z/src004
+
+    notes: Execute the corrected Settlement Request through the external executor.
+
+  - action_type: close
+
+    target_ref: DPID:rights-holder/20260901T020300Z/dp001
+
+    notes: Close the accepted dispute after successful correction and external settlement.
+
+resulting_record_refs:
+  - SRCID:external-executor/20260901T020400Z/src003
+  - SRQID:settlement-gateway/20260901T020430Z/srq002
+  - SRCID:external-executor/20260901T020500Z/src004
+
+reconciled_by: reconciliation-service
+
+authorization_refs:
+  - auth:reconciliation:20260901:001
+  - auth:settlement-reversal:20260901:001
+  - auth:settlement-reissue:20260901:001
+
+status: completed
+
+reconciled_at: "2026-09-01T02:06:00Z"
+
+reconciliation_hash:
+  algorithm: sha256
+  value: "c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"
