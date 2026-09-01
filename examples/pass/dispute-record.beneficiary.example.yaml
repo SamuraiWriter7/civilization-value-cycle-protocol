@@ -1,0 +1,28 @@
+protocol_version: "0.5"
+record_type: dispute_record
+
+dispute_id: DPID:rights-holder/20260901T020300Z/dp001
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+subject_type: settlement_receipt
+subject_ref: SRCID:external-executor/20260826T020200Z/src002
+
+dispute_type: beneficiary
+
+raised_by: rights-holder:primary
+
+evidence_refs:
+  - SRCID:external-executor/20260826T020200Z/src002
+  - evidence:beneficiary-registration:20260901:001
+
+requested_resolution: beneficiary_correction
+
+status: resolved
+
+reconciliation_ref: RCID:reconciliation-service/20260901T020600Z/rc001
+
+raised_at: "2026-09-01T02:03:00Z"
+
+dispute_hash:
+  algorithm: sha256
+  value: "d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1"
