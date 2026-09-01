@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:derivative_record:v0.4",
-  "title": "CVCP Derivative Record v0.4",
-  "description": "Registers an AI-generated or AI-mediated derivative and its declared Origin dependencies.",
+  "$id": "urn:cvcp:schema:derivative_record:v0.5",
+  "title": "CVCP Derivative Record v0.5",
+  "description": "Registers a derivative and its declared Origin dependencies.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.4"
+      "const": "0.5"
     },
     "record_type": {
       "const": "derivative_record"
@@ -43,7 +43,6 @@
       }
     },
     "derivative_type": {
-      "type": "string",
       "enum": [
         "content",
         "analysis",
@@ -105,60 +104,7 @@
           "type": "string",
           "pattern": "^[A-Fa-f0-9]+$"
         }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "enum": [
-                  "sha256",
-                  "blake3"
-                ]
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{64}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha384"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{96}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha512"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{128}$"
-              }
-            }
-          }
-        }
-      ]
+      }
     },
     "policyCheck": {
       "type": "object",
