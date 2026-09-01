@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:settlement_receipt_record:v0.4",
-  "title": "CVCP Settlement Receipt Record v0.4",
-  "description": "Records the independently receipted result of an externally executed Settlement Request.",
+  "$id": "urn:cvcp:schema:settlement_receipt_record:v0.5",
+  "title": "CVCP Settlement Receipt Record v0.5",
+  "description": "Records an immutable external settlement result and supports append-only supersession.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -20,7 +20,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.4"
+      "const": "0.5"
     },
     "record_type": {
       "const": "settlement_receipt_record"
@@ -43,7 +43,8 @@
         "processing",
         "settled",
         "failed",
-        "disputed"
+        "disputed",
+        "reversed"
       ]
     },
     "executed_allocations": {
@@ -95,28 +96,7 @@
       "then": {
         "required": [
           "external_transaction_ref"
-        ],
-        "properties": {
-          "executed_allocations": {
-            "items": {
-              "allOf": [
-                {
-                  "$ref": "#/$defs/executedAllocation"
-                },
-                {
-                  "properties": {
-                    "status": {
-                      "const": "settled"
-                    }
-                  },
-                  "required": [
-                    "external_transfer_ref"
-                  ]
-                }
-              ]
-            }
-          }
-        }
+        ]
       }
     },
     {
@@ -133,6 +113,24 @@
       "then": {
         "required": [
           "failure_reason"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution_status": {
+            "const": "reversed"
+          }
+        },
+        "required": [
+          "execution_status"
+        ]
+      },
+      "then": {
+        "required": [
+          "external_transaction_ref",
+          "supersedes_ref"
         ]
       }
     }
@@ -216,7 +214,8 @@
             "processing",
             "settled",
             "failed",
-            "disputed"
+            "disputed",
+            "reversed"
           ]
         },
         "external_transfer_ref": {
