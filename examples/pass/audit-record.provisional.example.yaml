@@ -1,4 +1,4 @@
-protocol_version: "0.4"
+protocol_version: "0.5"
 record_type: audit_record
 
 audit_id: AID:auditor-main/20260824T010810Z/a002
