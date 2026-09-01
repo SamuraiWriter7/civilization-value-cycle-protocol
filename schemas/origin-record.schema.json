@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:origin_record:v0.4",
-  "title": "CVCP Origin Record v0.4",
+  "$id": "urn:cvcp:schema:origin_record:v0.5",
+  "title": "CVCP Origin Record v0.5",
   "description": "Registers the source asset, rights, provenance anchor, and access policy.",
   "type": "object",
   "additionalProperties": false,
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.4"
+      "const": "0.5"
     },
     "record_type": {
       "const": "origin_record"
@@ -77,7 +77,6 @@
       ],
       "properties": {
         "algorithm": {
-          "type": "string",
           "enum": [
             "sha256",
             "sha384",
@@ -169,7 +168,6 @@
           "minLength": 1
         },
         "type": {
-          "type": "string",
           "enum": [
             "person",
             "organization",
@@ -195,7 +193,6 @@
           "minLength": 1
         },
         "asset_type": {
-          "type": "string",
           "enum": [
             "text",
             "image",
@@ -262,7 +259,6 @@
       ],
       "properties": {
         "reference": {
-          "type": "string",
           "enum": [
             "allow",
             "deny",
@@ -270,7 +266,6 @@
           ]
         },
         "training": {
-          "type": "string",
           "enum": [
             "allow",
             "deny",
@@ -278,7 +273,6 @@
           ]
         },
         "commercial_use": {
-          "type": "string",
           "enum": [
             "allow",
             "deny",
