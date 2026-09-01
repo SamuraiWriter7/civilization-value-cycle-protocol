@@ -1,0 +1,32 @@
+protocol_version: "0.5"
+record_type: reconciliation_record
+
+reconciliation_id: RCID:reconciliation-service/20260901T030200Z/rc900
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+dispute_refs:
+  - DPID:rights-holder/20260901T000000Z/missing
+
+affected_record_refs:
+  - SRQID:settlement-gateway/20260826T020000Z/srq001
+
+resolution_type: no_change
+
+resolution_actions:
+  - action_type: retain
+    target_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+    notes: No correction is applied.
+
+resulting_record_refs: []
+
+reconciled_by: reconciliation-service
+
+authorization_refs: []
+
+status: completed
+
+reconciled_at: "2026-09-01T03:02:00Z"
+
+reconciliation_hash:
+  algorithm: sha256
+  value: "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
