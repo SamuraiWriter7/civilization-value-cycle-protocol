@@ -1,0 +1,176 @@
+fixture_type: semantic_scenario
+name: reconciliation-amount-not-conserved
+
+records:
+  - protocol_version: "0.5"
+    record_type: dispute_record
+
+    dispute_id: DPID:rights-holder/20260901T031100Z/dp910
+    cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+    subject_type: royalty
+    subject_ref: RID:royalty-engine/20260824T010900Z/r001
+
+    dispute_type: royalty_amount
+
+    raised_by: rights-holder:primary
+
+    evidence_refs:
+      - evidence:royalty-recalculation:20260901:910
+
+    requested_resolution: royalty_recalculation
+
+    status: accepted
+
+    raised_at: "2026-09-01T03:11:00Z"
+
+    dispute_hash:
+      algorithm: sha256
+      value: "7070707070707070707070707070707070707070707070707070707070707070"
+
+  - protocol_version: "0.5"
+    record_type: royalty_record
+
+    royalty_id: RID:royalty-engine/20260901T031110Z/r910
+
+    supersedes_ref: RID:royalty-engine/20260824T010900Z/r001
+
+    audit_id: AID:auditor-main/20260824T010800Z/a001
+
+    royalty_basis:
+      contribution_assessment_ref: CAID:assessor-main/20260824T010700Z/ca001
+      audit_confidence: 0.9025
+      audit_status: verified
+
+    value_generated: 90.0
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        contribution_weight: 1.0
+        royalty_rate: 0.10
+        amount: 9.0
+
+    settlement_status: pending
+
+    created_at: "2026-09-01T03:11:10Z"
+
+  - protocol_version: "0.5"
+    record_type: settlement_request_record
+
+    settlement_request_id: SRQID:settlement-gateway/20260901T031120Z/srq910
+
+    supersedes_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+
+    royalty_id: RID:royalty-engine/20260824T010900Z/r001
+    audit_id: AID:auditor-main/20260824T010800Z/a001
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - allocation_id: allocation:910
+        origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        beneficiary_id: beneficiary:creator-shidenkai-ai
+        destination_ref: destination:external-account:creator-001
+        amount: 10.0
+
+    requested_by: settlement-gateway
+
+    authorization_refs:
+      - auth:reconciliation:20260901:910
+      - auth:royalty-settlement:20260901:910
+
+    execution_authority: external
+
+    idempotency_key: cvcp:fail:amount-conservation:910
+
+    request_status: accepted
+
+    requested_at: "2026-09-01T03:11:20Z"
+
+    request_hash:
+      algorithm: sha256
+      value: "8080808080808080808080808080808080808080808080808080808080808080"
+
+  - protocol_version: "0.5"
+    record_type: settlement_receipt_record
+
+    settlement_receipt_id: SRCID:external-executor/20260901T031130Z/src910
+
+    settlement_request_id: SRQID:settlement-gateway/20260901T031120Z/srq910
+
+    royalty_id: RID:royalty-engine/20260824T010900Z/r001
+
+    executor_id: external-executor
+
+    execution_status: settled
+
+    executed_allocations:
+      - allocation_id: allocation:910
+        origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        beneficiary_id: beneficiary:creator-shidenkai-ai
+        requested_amount: 10.0
+        executed_amount: 10.0
+        status: settled
+        external_transfer_ref: transfer:external-executor:910
+
+    external_transaction_ref: transaction:external-executor:910
+
+    executed_at: "2026-09-01T03:11:30Z"
+
+    receipt_hash:
+      algorithm: sha256
+      value: "9090909090909090909090909090909090909090909090909090909090909090"
+
+    evidence_refs:
+      - SRQID:settlement-gateway/20260901T031120Z/srq910
+      - transaction:external-executor:910
+
+  - protocol_version: "0.5"
+    record_type: reconciliation_record
+
+    reconciliation_id: RCID:reconciliation-service/20260901T031140Z/rc910
+    cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+    dispute_refs:
+      - DPID:rights-holder/20260901T031100Z/dp910
+
+    affected_record_refs:
+      - RID:royalty-engine/20260824T010900Z/r001
+      - SRQID:settlement-gateway/20260826T020000Z/srq001
+
+    resolution_type: royalty_recalculation
+
+    resolution_actions:
+      - action_type: recalculate
+        target_ref: RID:royalty-engine/20260824T010900Z/r001
+        result_ref: RID:royalty-engine/20260901T031110Z/r910
+        notes: Royalty was recalculated from 10 USD to 9 USD.
+
+      - action_type: reissue
+        target_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+        result_ref: SRQID:settlement-gateway/20260901T031120Z/srq910
+        notes: Settlement was incorrectly reissued for the old 10 USD amount.
+
+    resulting_record_refs:
+      - RID:royalty-engine/20260901T031110Z/r910
+      - SRQID:settlement-gateway/20260901T031120Z/srq910
+      - SRCID:external-executor/20260901T031130Z/src910
+
+    reconciled_by: reconciliation-service
+
+    authorization_refs:
+      - auth:reconciliation:20260901:910
+
+    status: completed
+
+    reconciled_at: "2026-09-01T03:11:40Z"
+
+    reconciliation_hash:
+      algorithm: sha256
+      value: "abababababababababababababababababababababababababababababababab"
