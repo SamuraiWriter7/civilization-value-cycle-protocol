@@ -1,4 +1,4 @@
-protocol_version: "0.4"
+protocol_version: "0.5"
 record_type: settlement_request_record
 
 settlement_request_id: SRQID:settlement-gateway/20260826T020000Z/srq001
