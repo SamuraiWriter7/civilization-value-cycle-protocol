@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:trace_chain_record:v0.4",
-  "title": "CVCP Trace Chain Record v0.4",
+  "$id": "urn:cvcp:schema:trace_chain_record:v0.5",
+  "title": "CVCP Trace Chain Record v0.5",
   "description": "Groups Trace Records into one causal DAG for one Derivative.",
   "type": "object",
   "additionalProperties": false,
@@ -19,7 +19,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.4"
+      "const": "0.5"
     },
     "record_type": {
       "const": "trace_chain_record"
@@ -97,60 +97,7 @@
           "type": "string",
           "pattern": "^[A-Fa-f0-9]+$"
         }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "enum": [
-                  "sha256",
-                  "blake3"
-                ]
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{64}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha384"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{96}$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "algorithm": {
-                "const": "sha512"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "pattern": "^[A-Fa-f0-9]{128}$"
-              }
-            }
-          }
-        }
-      ]
+      }
     }
   }
 }
