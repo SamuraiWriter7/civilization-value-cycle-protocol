@@ -1,4 +1,4 @@
-protocol_version: "0.4"
+protocol_version: "0.5"
 record_type: derivative_record
 
 derivative_id: DID:agent-alpha/task-001/20260824T010000Z/n001
