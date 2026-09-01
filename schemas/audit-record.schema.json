@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:audit_record:v0.4",
-  "title": "CVCP Audit Record v0.4",
-  "description": "Audits Evidence and Contribution Assessments and expresses attribution confidence.",
+  "$id": "urn:cvcp:schema:audit_record:v0.5",
+  "title": "CVCP Audit Record v0.5",
+  "description": "Audits attribution and supports append-only reassessment through supersession.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -26,12 +26,15 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.4"
+      "const": "0.5"
     },
     "record_type": {
       "const": "audit_record"
     },
     "audit_id": {
+      "$ref": "#/$defs/auditId"
+    },
+    "supersedes_ref": {
       "$ref": "#/$defs/auditId"
     },
     "derivative_id": {
@@ -103,27 +106,6 @@
       "$ref": "#/$defs/dateTime"
     }
   },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "status": {
-            "enum": [
-              "verified",
-              "provisional"
-            ]
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "contributions": {
-            "minItems": 1
-          }
-        }
-      }
-    }
-  ],
   "$defs": {
     "originId": {
       "type": "string",
