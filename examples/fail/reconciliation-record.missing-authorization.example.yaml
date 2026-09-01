@@ -1,0 +1,34 @@
+protocol_version: "0.5"
+record_type: reconciliation_record
+
+reconciliation_id: RCID:reconciliation-service/20260901T030400Z/rc902
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+cause_refs:
+  - SRCID:external-executor/20260826T020200Z/src002
+
+affected_record_refs:
+  - SRQID:settlement-gateway/20260826T020000Z/srq001
+
+resolution_type: settlement_retry
+
+resolution_actions:
+  - action_type: retry
+    target_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+    result_ref: SRQID:settlement-gateway/20260901T020430Z/srq002
+    notes: Retry was requested without reconciliation authorization.
+
+resulting_record_refs:
+  - SRQID:settlement-gateway/20260901T020430Z/srq002
+
+reconciled_by: reconciliation-service
+
+authorization_refs: []
+
+status: completed
+
+reconciled_at: "2026-09-01T03:04:00Z"
+
+reconciliation_hash:
+  algorithm: sha256
+  value: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
