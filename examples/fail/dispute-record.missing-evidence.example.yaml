@@ -1,0 +1,22 @@
+protocol_version: "0.5"
+record_type: dispute_record
+
+dispute_id: DPID:rights-holder/20260901T030100Z/dp901
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+subject_type: settlement_receipt
+subject_ref: SRCID:external-executor/20260826T020200Z/src002
+
+dispute_type: beneficiary
+
+raised_by: rights-holder:primary
+
+requested_resolution: beneficiary_correction
+
+status: open
+
+raised_at: "2026-09-01T03:01:00Z"
+
+dispute_hash:
+  algorithm: sha256
+  value: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
