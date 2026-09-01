@@ -1,0 +1,79 @@
+fixture_type: semantic_scenario
+name: settlement-request-supersession-cycle
+
+records:
+  - protocol_version: "0.5"
+    record_type: settlement_request_record
+
+    settlement_request_id: SRQID:settlement-gateway/20260901T030700Z/srq905
+
+    supersedes_ref: SRQID:settlement-gateway/20260901T030710Z/srq906
+
+    royalty_id: RID:royalty-engine/20260824T010900Z/r001
+    audit_id: AID:auditor-main/20260824T010800Z/a001
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - allocation_id: allocation:905
+        origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        beneficiary_id: beneficiary:creator-shidenkai-ai
+        destination_ref: destination:external-account:creator-001
+        amount: 10.0
+
+    requested_by: settlement-gateway
+
+    authorization_refs:
+      - auth:royalty-settlement:20260901:905
+
+    execution_authority: external
+
+    idempotency_key: cvcp:fail:supersession-cycle:905
+
+    request_status: accepted
+
+    requested_at: "2026-09-01T03:07:00Z"
+
+    request_hash:
+      algorithm: sha256
+      value: "3030303030303030303030303030303030303030303030303030303030303030"
+
+  - protocol_version: "0.5"
+    record_type: settlement_request_record
+
+    settlement_request_id: SRQID:settlement-gateway/20260901T030710Z/srq906
+
+    supersedes_ref: SRQID:settlement-gateway/20260901T030700Z/srq905
+
+    royalty_id: RID:royalty-engine/20260824T010900Z/r001
+    audit_id: AID:auditor-main/20260824T010800Z/a001
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - allocation_id: allocation:906
+        origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        beneficiary_id: beneficiary:creator-shidenkai-ai
+        destination_ref: destination:external-account:creator-001
+        amount: 10.0
+
+    requested_by: settlement-gateway
+
+    authorization_refs:
+      - auth:royalty-settlement:20260901:906
+
+    execution_authority: external
+
+    idempotency_key: cvcp:fail:supersession-cycle:906
+
+    request_status: accepted
+
+    requested_at: "2026-09-01T03:07:10Z"
+
+    request_hash:
+      algorithm: sha256
+      value: "4040404040404040404040404040404040404040404040404040404040404040"
