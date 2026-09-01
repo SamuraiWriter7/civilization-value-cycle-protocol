@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:settlement_request_record:v0.4",
-  "title": "CVCP Settlement Request Record v0.4",
-  "description": "Requests execution of a verified Royalty allocation through an externally authorized settlement executor.",
+  "$id": "urn:cvcp:schema:settlement_request_record:v0.5",
+  "title": "CVCP Settlement Request Record v0.5",
+  "description": "Requests externally authorized settlement and supports append-only retry through supersession.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -23,12 +23,15 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.4"
+      "const": "0.5"
     },
     "record_type": {
       "const": "settlement_request_record"
     },
     "settlement_request_id": {
+      "$ref": "#/$defs/settlementRequestId"
+    },
+    "supersedes_ref": {
       "$ref": "#/$defs/settlementRequestId"
     },
     "royalty_id": {
@@ -152,25 +155,7 @@
           "minLength": 1,
           "maxLength": 32
         }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "fiat"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "code": {
-                "pattern": "^[A-Z]{3}$"
-              }
-            }
-          }
-        }
-      ]
+      }
     },
     "settlementAllocation": {
       "type": "object",
