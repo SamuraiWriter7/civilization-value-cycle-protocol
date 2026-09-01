@@ -1,4 +1,4 @@
-protocol_version: "0.4"
+protocol_version: "0.5"
 record_type: settlement_receipt_record
 
 settlement_receipt_id: SRCID:external-executor/20260826T020200Z/src002
