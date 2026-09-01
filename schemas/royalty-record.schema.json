@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:royalty_record:v0.4",
-  "title": "CVCP Royalty Record v0.4",
-  "description": "Records value allocation and its verified attribution basis before external settlement execution.",
+  "$id": "urn:cvcp:schema:royalty_record:v0.5",
+  "title": "CVCP Royalty Record v0.5",
+  "description": "Records value allocation while supporting append-only correction and supersession.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -19,12 +19,15 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.4"
+      "const": "0.5"
     },
     "record_type": {
       "const": "royalty_record"
     },
     "royalty_id": {
+      "$ref": "#/$defs/royaltyId"
+    },
+    "supersedes_ref": {
       "$ref": "#/$defs/royaltyId"
     },
     "audit_id": {
@@ -73,93 +76,6 @@
       "$ref": "#/$defs/dateTime"
     }
   },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "royalty_basis": {
-            "properties": {
-              "audit_status": {
-                "const": "provisional"
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "settlement_status": {
-            "enum": [
-              "provisional",
-              "not_required",
-              "disputed"
-            ]
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "royalty_basis": {
-            "properties": {
-              "audit_status": {
-                "enum": [
-                  "disputed",
-                  "rejected"
-                ]
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "settlement_status": {
-            "enum": [
-              "not_required",
-              "disputed"
-            ]
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "settlement_status": {
-            "enum": [
-              "processing",
-              "settled",
-              "failed"
-            ]
-          }
-        }
-      },
-      "then": {
-        "required": [
-          "settlement_request_ref"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "settlement_status": {
-            "enum": [
-              "settled",
-              "failed"
-            ]
-          }
-        }
-      },
-      "then": {
-        "required": [
-          "settlement_receipt_refs"
-        ]
-      }
-    }
-  ],
   "$defs": {
     "originId": {
       "type": "string",
@@ -216,25 +132,7 @@
           "minLength": 1,
           "maxLength": 32
         }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "fiat"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "code": {
-                "pattern": "^[A-Z]{3}$"
-              }
-            }
-          }
-        }
-      ]
+      }
     },
     "allocation": {
       "type": "object",
