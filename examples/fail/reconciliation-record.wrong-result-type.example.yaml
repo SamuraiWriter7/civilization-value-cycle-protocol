@@ -1,0 +1,65 @@
+fixture_type: semantic_scenario
+name: reconciliation-wrong-result-type
+
+records:
+  - protocol_version: "0.5"
+    record_type: dispute_record
+
+    dispute_id: DPID:rights-holder/20260901T030500Z/dp903
+    cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+    subject_type: settlement_request
+    subject_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+
+    dispute_type: missing_settlement
+
+    raised_by: rights-holder:primary
+
+    evidence_refs:
+      - evidence:settlement-review:20260901:903
+
+    requested_resolution: settlement_retry
+
+    status: accepted
+
+    raised_at: "2026-09-01T03:05:00Z"
+
+    dispute_hash:
+      algorithm: sha256
+      value: "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+
+  - protocol_version: "0.5"
+    record_type: reconciliation_record
+
+    reconciliation_id: RCID:reconciliation-service/20260901T030510Z/rc903
+    cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+    dispute_refs:
+      - DPID:rights-holder/20260901T030500Z/dp903
+
+    affected_record_refs:
+      - SRQID:settlement-gateway/20260826T020000Z/srq001
+
+    resolution_type: settlement_retry
+
+    resolution_actions:
+      - action_type: retry
+        target_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+        result_ref: AID:auditor-main/20260824T010800Z/a001
+        notes: Invalid result type for a Settlement Request retry.
+
+    resulting_record_refs:
+      - AID:auditor-main/20260824T010800Z/a001
+
+    reconciled_by: reconciliation-service
+
+    authorization_refs:
+      - auth:reconciliation:20260901:903
+
+    status: completed
+
+    reconciled_at: "2026-09-01T03:05:10Z"
+
+    reconciliation_hash:
+      algorithm: sha256
+      value: "1010101010101010101010101010101010101010101010101010101010101010"
