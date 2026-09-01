@@ -1,0 +1,23 @@
+protocol_version: "0.5"
+record_type: state_transition_record
+
+transition_id: STID:cycle-main/20260901T020610Z/st012
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+previous_status: reconciliation_processing
+next_status: reconciled
+
+evidence_refs:
+  - RCID:reconciliation-service/20260901T020600Z/rc001
+  - SRCID:external-executor/20260901T020500Z/src004
+  - transaction:external-executor:000002
+
+transitioned_at: "2026-09-01T02:06:10Z"
+
+actor_id: cycle-controller
+
+reason: Reconciliation completed after reversal, corrected reissue, and verified external settlement.
+
+transition_hash:
+  algorithm: sha256
+  value: "b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9b9"
