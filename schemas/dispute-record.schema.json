@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cvcp:schema:dispute_record:v0.5",
+  "title": "CVCP Dispute Record v0.5",
+  "description": "Records an explicit dispute against a specific Value Cycle record without erasing prior history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "record_type",
+    "dispute_id",
+    "cycle_id",
+    "subject_type",
+    "subject_ref",
+    "dispute_type",
+    "raised_by",
+    "evidence_refs",
+    "requested_resolution",
+    "status",
+    "raised_at",
+    "dispute_hash"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "0.5"
+    },
+    "record_type": {
+      "const": "dispute_record"
+    },
+    "dispute_id": {
+      "$ref": "#/$defs/disputeId"
+    },
+    "cycle_id": {
+      "$ref": "#/$defs/cycleId"
+    },
+    "subject_type": {
+      "enum": [
+        "origin",
+        "derivative",
+        "trace",
+        "contribution",
+        "audit",
+        "royalty",
+        "settlement_request",
+        "settlement_receipt"
+      ]
+    },
+    "subject_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dispute_type": {
+      "enum": [
+        "ownership",
+        "attribution",
+        "contribution_weight",
+        "royalty_amount",
+        "beneficiary",
+        "settlement_amount",
+        "duplicate_settlement",
+        "missing_settlement",
+        "unauthorized_execution",
+        "evidence_integrity",
+        "other"
+      ]
+    },
+    "raised_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "requested_resolution": {
+      "enum": [
+        "review_only",
+        "no_change",
+        "allocation_correction",
+        "beneficiary_correction",
+        "royalty_recalculation",
+        "settlement_retry",
+        "settlement_reversal",
+        "audit_reassessment",
+        "cycle_reopen",
+        "other"
+      ]
+    },
+    "status": {
+      "enum": [
+        "open",
+        "under_review",
+        "accepted",
+        "rejected",
+        "resolved"
+      ]
+    },
+    "reconciliation_ref": {
+      "$ref": "#/$defs/reconciliationId"
+    },
+    "raised_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "dispute_hash": {
+      "$ref": "#/$defs/contentHash"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "resolved"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "reconciliation_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject_type": {
+            "const": "origin"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subject_ref": {
+            "pattern": "^OID:"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject_type": {
+            "const": "derivative"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subject_ref": {
+            "pattern": "^DID:"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject_type": {
+            "const": "trace"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subject_ref": {
+            "pattern": "^TID:"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject_type": {
+            "const": "contribution"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subject_ref": {
+            "pattern": "^CAID:"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject_type": {
+            "const": "audit"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subject_ref": {
+            "pattern": "^AID:"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject_type": {
+            "const": "royalty"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subject_ref": {
+            "pattern": "^RID:"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject_type": {
+            "const": "settlement_request"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subject_ref": {
+            "pattern": "^SRQID:"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject_type": {
+            "const": "settlement_receipt"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subject_ref": {
+            "pattern": "^SRCID:"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "disputeId": {
+      "type": "string",
+      "pattern": "^DPID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "cycleId": {
+      "type": "string",
+      "pattern": "^VCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "reconciliationId": {
+      "type": "string",
+      "pattern": "^RCID:[A-Za-z0-9._-]+/[0-9]{8}T[0-9]{6}Z/[A-Za-z0-9._-]+$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contentHash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "enum": [
+            "sha256",
+            "sha384",
+            "sha512",
+            "blake3"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]+$"
+        }
+      }
+    }
+  }
+}
