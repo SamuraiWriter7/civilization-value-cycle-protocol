@@ -1,0 +1,71 @@
+fixture_type: semantic_scenario
+name: settlement-retry-changed-royalty
+
+records:
+  - protocol_version: "0.5"
+    record_type: royalty_record
+
+    royalty_id: RID:royalty-engine/20260901T030800Z/r907
+
+    supersedes_ref: RID:royalty-engine/20260824T010900Z/r001
+
+    audit_id: AID:auditor-main/20260824T010800Z/a001
+
+    royalty_basis:
+      contribution_assessment_ref: CAID:assessor-main/20260824T010700Z/ca001
+      audit_confidence: 0.9025
+      audit_status: verified
+
+    value_generated: 90.0
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        contribution_weight: 1.0
+        royalty_rate: 0.10
+        amount: 9.0
+
+    settlement_status: pending
+
+    created_at: "2026-09-01T03:08:00Z"
+
+  - protocol_version: "0.5"
+    record_type: settlement_request_record
+
+    settlement_request_id: SRQID:settlement-gateway/20260901T030810Z/srq907
+
+    supersedes_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+
+    royalty_id: RID:royalty-engine/20260901T030800Z/r907
+    audit_id: AID:auditor-main/20260824T010800Z/a001
+
+    value_unit:
+      type: fiat
+      code: USD
+
+    allocations:
+      - allocation_id: allocation:907
+        origin_id: OID:book/shidenkai-ai/civilization-os/v1
+        beneficiary_id: beneficiary:creator-shidenkai-ai
+        destination_ref: destination:external-account:creator-001
+        amount: 9.0
+
+    requested_by: settlement-gateway
+
+    authorization_refs:
+      - auth:settlement-retry:20260901:907
+
+    execution_authority: external
+
+    idempotency_key: cvcp:fail:changed-royalty:907
+
+    request_status: accepted
+
+    requested_at: "2026-09-01T03:08:10Z"
+
+    request_hash:
+      algorithm: sha256
+      value: "5050505050505050505050505050505050505050505050505050505050505050"
