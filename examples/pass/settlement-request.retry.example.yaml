@@ -1,0 +1,46 @@
+protocol_version: "0.5"
+record_type: settlement_request_record
+
+settlement_request_id: SRQID:settlement-gateway/20260901T020430Z/srq002
+
+supersedes_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+
+royalty_id: RID:royalty-engine/20260824T010900Z/r001
+audit_id: AID:auditor-main/20260824T010800Z/a001
+
+value_unit:
+  type: fiat
+  code: USD
+
+allocations:
+  - allocation_id: allocation:002
+
+    origin_id: OID:book/shidenkai-ai/civilization-os/v1
+
+    beneficiary_id: beneficiary:rights-holder-primary
+
+    destination_ref: destination:external-account:rights-holder-primary
+
+    amount: 10.0
+
+    memo: Corrected beneficiary settlement following reconciliation.
+
+requested_by: settlement-gateway
+
+authorization_refs:
+  - auth:reconciliation:20260901:001
+  - auth:royalty-settlement:20260901:002
+
+execution_authority: external
+
+idempotency_key: cvcp:c001:r001:settlement:retry:v2
+
+request_status: accepted
+
+requested_at: "2026-09-01T02:04:30Z"
+
+expires_at: "2026-09-02T02:04:30Z"
+
+request_hash:
+  algorithm: sha256
+  value: "a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"
