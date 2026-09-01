@@ -1,0 +1,25 @@
+protocol_version: "0.5"
+record_type: dispute_record
+
+dispute_id: DPID:rights-holder/20260901T030000Z/dp900
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+subject_type: settlement_receipt
+subject_ref: SRCID:external-executor/20260901T000000Z/missing
+
+dispute_type: settlement_amount
+
+raised_by: rights-holder:primary
+
+evidence_refs:
+  - evidence:bank-ledger:20260901:900
+
+requested_resolution: review_only
+
+status: open
+
+raised_at: "2026-09-01T03:00:00Z"
+
+dispute_hash:
+  algorithm: sha256
+  value: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
