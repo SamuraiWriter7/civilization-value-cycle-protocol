@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:cvcp:schema:state_transition_record:v0.4",
-  "title": "CVCP State Transition Record v0.4",
-  "description": "Records one auditable transition between Value Cycle states.",
+  "$id": "urn:cvcp:schema:state_transition_record:v0.5",
+  "title": "CVCP State Transition Record v0.5",
+  "description": "Records one auditable transition between Value Cycle states including reconciliation and recovery.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -20,7 +20,7 @@
   ],
   "properties": {
     "protocol_version": {
-      "const": "0.4"
+      "const": "0.5"
     },
     "record_type": {
       "const": "state_transition_record"
@@ -84,7 +84,10 @@
         "settlement_processing",
         "settlement_failed",
         "settled",
-        "disputed"
+        "disputed",
+        "reconciliation_pending",
+        "reconciliation_processing",
+        "reconciled"
       ]
     },
     "dateTime": {
