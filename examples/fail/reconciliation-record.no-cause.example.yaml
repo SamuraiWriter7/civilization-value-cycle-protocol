@@ -1,0 +1,29 @@
+protocol_version: "0.5"
+record_type: reconciliation_record
+
+reconciliation_id: RCID:reconciliation-service/20260901T030300Z/rc901
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+affected_record_refs:
+  - SRQID:settlement-gateway/20260826T020000Z/srq001
+
+resolution_type: no_change
+
+resolution_actions:
+  - action_type: retain
+    target_ref: SRQID:settlement-gateway/20260826T020000Z/srq001
+    notes: Invalid reconciliation because no cause is declared.
+
+resulting_record_refs: []
+
+reconciled_by: reconciliation-service
+
+authorization_refs: []
+
+status: completed
+
+reconciled_at: "2026-09-01T03:03:00Z"
+
+reconciliation_hash:
+  algorithm: sha256
+  value: "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
