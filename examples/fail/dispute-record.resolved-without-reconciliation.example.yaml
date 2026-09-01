@@ -1,0 +1,25 @@
+protocol_version: "0.5"
+record_type: dispute_record
+
+dispute_id: DPID:rights-holder/20260901T030900Z/dp908
+cycle_id: VCID:cycle-main/20260824T010000Z/c001
+
+subject_type: royalty
+subject_ref: RID:royalty-engine/20260824T010900Z/r001
+
+dispute_type: royalty_amount
+
+raised_by: rights-holder:primary
+
+evidence_refs:
+  - evidence:royalty-review:20260901:908
+
+requested_resolution: royalty_recalculation
+
+status: resolved
+
+raised_at: "2026-09-01T03:09:00Z"
+
+dispute_hash:
+  algorithm: sha256
+  value: "6060606060606060606060606060606060606060606060606060606060606060"
